@@ -1,0 +1,11 @@
+---
+title: "initial-exploration"
+format: html
+---
+
+```{r}
+library(DescTools)
+
+View(d.countries)
+```
+
