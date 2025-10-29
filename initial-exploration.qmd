@@ -2,10 +2,63 @@
 title: "initial-exploration"
 format: html
 ---
+# Initial exploration of coastline protection data against countries GDP
+```{r}
+# load in appropriate libraries
+library(DescTools)
+library(tidyverse)
+```
+
+## Addressing differences in names between gdp data and protected coastline data
+```{r}
+# use data from DescTools package to address 
+country_names <- d.countries
+
+# subset for only necessary columns
+country_names <- country_names[, c('name', 'a3')]
+
+country_names <- country_names |> 
+  rename('iso_ter' = 'a3')
+```
 
 ```{r}
-library(DescTools)
+# Read in GDP data
+gdp <- read_csv(here::here("data", "imf-dm-export-20251011.csv"))
 
-View(d.countries)
+head(gdp)
+```
+
+```{r}
+# read in coastline data
+coastline <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "coastline_coverage.csv"))
+
+# join with country names
+coastline <- full_join(coastline, country_names, by = 'iso_ter')
+```
+
+```{r}
+# Read in coldwater coral data
+coldwater_coral <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "coldwatercorals.csv"))
+```
+```{r}
+# Read in mangroves data
+mangroves <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "mangroves.csv"))
+```
+```{r}
+# Read in salt marsh data
+saltmarshes <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "saltmarshes.csv"))
+```
+
+```{r}
+# Read in sea grass data
+seagrasses <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "seagrasses.csv"))
+```
+```{r}
+# Read in warm water corals data
+warm_coral <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "warmwatercorals.csv"))
+```
+
+```{r}
+str(coastline)
 ```
 
