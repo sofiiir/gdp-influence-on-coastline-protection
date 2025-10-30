@@ -144,4 +144,5 @@ ggplot(data = mangroves_gdp, aes(x = x2016, y = percent_protected )) +
        title = "2016 Percent Protected Mangroves by GDP") +
   theme_classic()
 ```
-
+### How is this visual relevant for my final project question?
+This visual shows the percentage of protected mangroves for each country where both GDP data is available and mangroves exist. This is one of the 5 coastline types I will be graphing and analyzing the effect of GDP on the percent protection. 
