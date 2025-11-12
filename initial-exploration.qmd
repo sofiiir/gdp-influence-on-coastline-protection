@@ -9,7 +9,7 @@ library(DescTools)
 library(tidyverse)
 ```
 
-## Addressing differences in names between gdp data and protected coastline data
+## Address differences in names between gdp data and protected coastline data
 ```{r}
 # use data from DescTools package to address 
 country_names <- d.countries
@@ -19,8 +19,8 @@ country_names <- country_names[, c('name', 'a3')]
 
 country_names <- country_names |> 
    rename("iso_ter" = "a3")
-
 ```
+
 Protected coastline data does not contain a year except for the mangrove data. For the purposes of this analysis, the assumption is that all of the data was last updated in 2016. 2016 GDP data will be used for consistency in the year. 
 ```{r}
 # read in GDP data
@@ -68,7 +68,7 @@ mangroves <- full_join(mangroves, country_names, by = 'iso_ter')
 ```
 
 ```{r}
-# Read in salt marsh data
+# read in salt marsh data
 saltmarshes <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "saltmarshes.csv"))
 
 saltmarshes <- saltmarshes |> 
@@ -89,7 +89,7 @@ seagrasses <- seagrasses |>
 seagrasses <- full_join(seagrasses, country_names, by = 'iso_ter')
 ```
 ```{r}
-# Read in warm water corals data
+# read in warm water corals data
 warm_coral <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "warmwatercorals.csv"))
 
 warm_coral <- warm_coral |> 
@@ -100,6 +100,7 @@ warm_coral <- full_join(warm_coral, country_names, by = 'iso_ter')
 ```
 
 ```{r}
+# view column names and object types
 str(coastline)
 ```
 Make a graph showing any possible correlation of GDP to percent of protected mangroves. 
@@ -107,7 +108,6 @@ Make a graph showing any possible correlation of GDP to percent of protected man
 # join mangrove and gdp data
 mangroves_gdp <- full_join(mangroves, gdp, by = 'name')
 ```
-
 We need to filter for only countries that have mangroves
 ```{r}
 # look at the unique values for mangrove total area
@@ -119,18 +119,16 @@ unique(mangroves_gdp$total_area_2016)
 ```
 Filter for countries with available GDP data for 2016.
 ```{r}
-# filter out - and NA for total area
  mangroves_gdp <- mangroves_gdp |> 
   filter(!is.na(x2016) )
 ```
 
 Almost none of the data from this data frame is numeric. Change the data type for those values needed to graph to numeric. 
 ```{r}
-# GDP data has data type character
 # change the gdp data to numeric
 mangroves_gdp <- transform(mangroves_gdp, x2016 = as.numeric(x2016))
 
-# change perecent protected to numeric
+# change percent protected to numeric
 mangroves_gdp <- transform(mangroves_gdp, percent_protected = as.numeric(percent_protected))
 ```
 
