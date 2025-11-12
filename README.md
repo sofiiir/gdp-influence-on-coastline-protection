@@ -1,1 +1,3 @@
-# gdp-influence-on-coastline-protection
+# GPD-Influence-on-Coastline-Protection
+### Author: Sofia Rodas
+
