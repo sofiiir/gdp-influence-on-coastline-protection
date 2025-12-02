@@ -1,8 +1,8 @@
 ---
-title: "initial-exploration"
+title: "data-cleaning-function"
 format: html
 ---
-# Initial exploration of coastline protection data against countries GDP
+
 ```{r}
 # load in appropriate libraries
 library(DescTools)
@@ -37,6 +37,7 @@ gdp <- gdp |>
 gdp <- gdp[, c('name', 'x2016')]
 ```
 
+
 ```{r}
 # read in coastline data
 coastline <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "coastline_coverage.csv"))
@@ -56,6 +57,7 @@ coldwater_coral <- coldwater_coral |>
 coldwater_coral <- full_join(coldwater_coral, country_names, by = 'iso_ter')
 ```
 
+
 ```{r}
 # Read in mangroves data
 mangroves <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "mangroves.csv"))
@@ -66,6 +68,7 @@ mangroves <- mangroves |>
 # join with country names
 mangroves <- full_join(mangroves, country_names, by = 'iso_ter')
 ```
+
 
 ```{r}
 # read in salt marsh data
@@ -88,6 +91,7 @@ seagrasses <- seagrasses |>
 # join with country names
 seagrasses <- full_join(seagrasses, country_names, by = 'iso_ter')
 ```
+
 ```{r}
 # read in warm water corals data
 warm_coral <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "warmwatercorals.csv"))
@@ -99,48 +103,54 @@ warm_coral <- warm_coral |>
 warm_coral <- full_join(warm_coral, country_names, by = 'iso_ter')
 ```
 
+GENERALIZED FUNCTION 
 ```{r}
-# view column names and object types
-str(coastline)
-```
-Make a graph showing any possible correlation of GDP to percent of protected mangroves. 
-```{r}
-# join mangrove and gdp data
-mangroves_gdp <- full_join(mangroves, gdp, by = 'name')
-```
-We need to filter for only countries that have mangroves
-```{r}
-# look at the unique values for mangrove total area
-unique(mangroves_gdp$total_area_2016)
 
-# filter out - and NA for total area
- mangroves_gdp <- mangroves_gdp |> 
-  filter((total_area_2016 != "-"), (total_area_2016 != "NA") )
-```
-Filter for countries with available GDP data for 2016.
-```{r}
- mangroves_gdp <- mangroves_gdp |> 
-  filter(!is.na(x2016) )
-```
+dfs <- c(coastline, coldwater_coral, mangroves, saltmarshes, seagrasses, warm_coral)
+colors_list <- c("#773344", "#D77A61", "forestgreen", "#273E47", "#9BC1BC", "#ED6A5A")
 
-Almost none of the data from this data frame is numeric. Change the data type for those values needed to graph to numeric. 
-```{r}
-# change the gdp data to numeric
-mangroves_gdp <- transform(mangroves_gdp, x2016 = as.numeric(x2016))
+clean_data <- function(df, column_name, gdp){
 
-# change percent protected to numeric
-mangroves_gdp <- transform(mangroves_gdp, percent_protected = as.numeric(percent_protected))
-```
+  # join df and gdp data
+  df_gdp <- full_join(df, gdp, by = 'name')
+  
+  # filter out - and NA 
+ df_gdp <- df_gdp |> 
+  filter(({{column_name}} != "-"), ({{column_name}} != "NA") )
+ 
+ # filter for countries with available GDP data for 2016.
+ df_gdp <- df_gdp |> 
+  filter(!is.na(x2016))
+ 
+  # change the gdp data to numeric
+  df_gdp <- transform(df_gdp, x2016 = as.numeric(x2016))
 
+  # change percent protected to numeric
+  df_gdp <- transform(df_gdp, percent_protected = as.numeric(percent_protected))
+  
+  return(df_gdp)
+ 
+}
 
-Initial plot
-```{r}
-plot_mangroves <- ggplot(data = mangroves_gdp, aes(x = x2016, y = percent_protected )) +
-  geom_point(color = "forestgreen") +
+initial_graph <- function(df, colors_df) {
+  
+   #initial plots
+plot_df <- ggplot(data = df_gdp, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = colors_list) +
   labs(x= "GDP",
        y = "Percent protected",
-       title = "2016 Percent Protected Mangroves by GDP") +
+       title = print("2016 Percent Protected", df, "by GDP")) +
   theme_classic()
+}
 ```
-### How is this visual relevant for my final project question?
-This visual shows the percentage of protected mangroves for each country where both GDP data is available and mangroves exist. This is one of the 5 coastline types I will be graphing and analyzing the effect of GDP on the percent protection. 
+
+```{r}
+clean_data(df = coastline, column_name = total_coastal_length, gdp =  gdp)
+```
+```{r}
+clean_data(df = mangroves, column_name = mangroves$total_area_2016, gdp = gdp)
+```
+
+
+
+
