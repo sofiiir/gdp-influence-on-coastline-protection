@@ -7,6 +7,7 @@ format: html
 # load in appropriate libraries
 library(DescTools)
 library(tidyverse)
+library(betareg)
 ```
 
 ## Address differences in names between gdp data and protected coastline data
@@ -136,36 +137,95 @@ clean_data <- function(df, ecosystem, column_name, gdp){
  
 }
 
-initial_graph <- function(df, colors_df) {
+initial_graph <- function(df, ecosystem, color) {
   
    #initial plots
-plot_df <- ggplot(data = df_gdp, aes(x = x2016, y = percent_protected )) +
-  geom_point(color = colors_list) +
+plot_df <- ggplot(data = df, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = color) +
   labs(x= "GDP",
        y = "Percent protected",
-       title = print("2016 Percent Protected", df, "by GDP")) +
+       title = print0("2016 Percent Protected", ecosystem)) +
   theme_classic()
+
+return(plot_df)
 }
 ```
 
 ```{r}
 clean_coldwater_coral <- clean_data(df = coldwater_coral, ecosystem = 'coldwater_coral', column_name = total_area, gdp =  gdp)
 
+# initial_graph(clean_coldwater_coral, ecosystem = "coldwater_coral", color = "#773344")
+
+#initial plots
+coldwater_coral_plot <- ggplot(data = clean_coldwater_coral, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "#773344") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Coldwater Coral by GDP")) +
+  theme_classic()
+
+coldwater_coral_plot
 ```
 
 ```{r}
 clean_mangroves <- clean_data(df = mangroves, ecosystem = 'mangroves', column_name = total_area_2016, gdp = gdp)
+
+#initial plots
+mangrove_plot <- ggplot(data = clean_mangroves, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "forestgreen") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Mangroves by GDP")) +
+  theme_classic()
+
+mangrove_plot
 ```
 ```{r}
 clean_saltmarshes <- clean_data(df = saltmarshes, ecosystem = 'saltmarshes', column_name = total_area, gdp =  gdp)
+
+#initial plots
+saltmarshes_plot <- ggplot(data = clean_saltmarshes, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "#273E47") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Saltmarshes by GDP")) +
+  theme_classic()
+
+saltmarshes_plot
 ```
 
 ```{r}
 clean_seagrasses <- clean_data(df = seagrasses, ecosystem = "seagrasses", column_name = total_area, gdp =  gdp)
+
+#initial plots
+seagrass_plot <- ggplot(data = clean_seagrasses, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "#9BC1BC") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Seagrasses by GDP")) +
+  theme_classic()
+
+seagrass_plot
 ```
 ```{r}
 clean_warm_coral <- clean_data(df = warm_coral, ecosystem = 'warm_coral', column_name = total_area, gdp =  gdp)
+
+#initial plots
+warm_coral_plot <- ggplot(data = clean_warm_coral, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "#ED6A5A") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Warmwater Coral by GDP")) +
+  theme_classic()
+
+warm_coral_plot
 ```
 
+# Beta Regression
+```{r}
+betareg(percent_protected ~ x2016 + ecosystem,
+        data = clean_coldwater_coral,
+        link = "logit")
+```
 
 
