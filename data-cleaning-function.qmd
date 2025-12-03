@@ -106,13 +106,13 @@ warm_coral <- full_join(warm_coral, country_names, by = 'iso_ter')
 GENERALIZED FUNCTION 
 ```{r}
 
-dfs <- c(coastline, coldwater_coral, mangroves, saltmarshes, seagrasses, warm_coral)
-colors_list <- c("#773344", "#D77A61", "forestgreen", "#273E47", "#9BC1BC", "#ED6A5A")
+dfs <- c(coldwater_coral, mangroves, saltmarshes, seagrasses, warm_coral)
+colors_list <- c("#773344", "forestgreen", "#273E47", "#9BC1BC", "#ED6A5A")
 
-clean_data <- function(df, column_name, gdp){
+clean_data <- function(df, ecosystem, column_name, gdp){
 
   # join df and gdp data
-  df_gdp <- full_join(df, gdp, by = 'name')
+  df_gdp <- full_join(df, gdp, by = 'name', relationship = "many-to-many")
   
   # filter out - and NA 
  df_gdp <- df_gdp |> 
@@ -127,6 +127,10 @@ clean_data <- function(df, column_name, gdp){
 
   # change percent protected to numeric
   df_gdp <- transform(df_gdp, percent_protected = as.numeric(percent_protected))
+  
+  # add a column with ecosystem type
+  df_gdp <- df_gdp |> 
+  mutate(ecosystem = ecosystem)
   
   return(df_gdp)
  
@@ -145,12 +149,23 @@ plot_df <- ggplot(data = df_gdp, aes(x = x2016, y = percent_protected )) +
 ```
 
 ```{r}
-clean_data(df = coastline, column_name = total_coastal_length, gdp =  gdp)
-```
-```{r}
-clean_data(df = mangroves, column_name = mangroves$total_area_2016, gdp = gdp)
+clean_coldwater_coral <- clean_data(df = coldwater_coral, ecosystem = 'coldwater_coral', column_name = total_area, gdp =  gdp)
+
 ```
 
+```{r}
+clean_mangroves <- clean_data(df = mangroves, ecosystem = 'mangroves', column_name = total_area_2016, gdp = gdp)
+```
+```{r}
+clean_saltmarshes <- clean_data(df = saltmarshes, ecosystem = 'saltmarshes', column_name = total_area, gdp =  gdp)
+```
+
+```{r}
+clean_seagrasses <- clean_data(df = seagrasses, ecosystem = "seagrasses", column_name = total_area, gdp =  gdp)
+```
+```{r}
+clean_warm_coral <- clean_data(df = warm_coral, ecosystem = 'warm_coral', column_name = total_area, gdp =  gdp)
+```
 
 
 
