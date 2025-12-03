@@ -166,6 +166,10 @@ coldwater_coral_plot <- ggplot(data = clean_coldwater_coral, aes(x = x2016, y = 
 
 coldwater_coral_plot
 ```
+```{r}
+clean_coldwater_coral <- clean_coldwater_coral |> select("iso_ter", "total_area", "protected_area", "percent_protected", "presence", "name", "x2016", "ecosystem")
+```
+
 
 ```{r}
 clean_mangroves <- clean_data(df = mangroves, ecosystem = 'mangroves', column_name = total_area_2016, gdp = gdp)
@@ -181,6 +185,13 @@ mangrove_plot <- ggplot(data = clean_mangroves, aes(x = x2016, y = percent_prote
 mangrove_plot
 ```
 ```{r}
+clean_mangroves <- clean_mangroves |> 
+  rename("total_area" = "total_area_2016" )
+
+clean_mangroves <- clean_mangroves |> select("iso_ter", "total_area", "protected_area", "percent_protected", "presence", "name", "x2016", "ecosystem")
+```
+
+```{r}
 clean_saltmarshes <- clean_data(df = saltmarshes, ecosystem = 'saltmarshes', column_name = total_area, gdp =  gdp)
 
 #initial plots
@@ -193,6 +204,10 @@ saltmarshes_plot <- ggplot(data = clean_saltmarshes, aes(x = x2016, y = percent_
 
 saltmarshes_plot
 ```
+```{r}
+clean_saltmarshes <- clean_saltmarshes |> select("iso_ter", "total_area", "protected_area", "percent_protected", "presence", "name", "x2016", "ecosystem")
+```
+
 
 ```{r}
 clean_seagrasses <- clean_data(df = seagrasses, ecosystem = "seagrasses", column_name = total_area, gdp =  gdp)
@@ -208,6 +223,10 @@ seagrass_plot <- ggplot(data = clean_seagrasses, aes(x = x2016, y = percent_prot
 seagrass_plot
 ```
 ```{r}
+clean_seagrasses <- clean_seagrasses |> select("iso_ter", "total_area", "protected_area", "percent_protected", "presence", "name", "x2016", "ecosystem")
+```
+
+```{r}
 clean_warm_coral <- clean_data(df = warm_coral, ecosystem = 'warm_coral', column_name = total_area, gdp =  gdp)
 
 #initial plots
@@ -220,11 +239,65 @@ warm_coral_plot <- ggplot(data = clean_warm_coral, aes(x = x2016, y = percent_pr
 
 warm_coral_plot
 ```
+```{r}
+clean_warm_coral <- clean_warm_coral |> select("iso_ter", "total_area", "protected_area", "percent_protected", "presence", "name", "x2016", "ecosystem")
+```
+
+
+```{r}
+rename_columns <- function (df) {
+    df <- df |> rename("pc_gdp_2016" = "x2016",
+         "country_name" = "name")
+}
+```
+
+```{r}
+rename_columns(clean_coldwater_coral)
+rename_columns(clean_mangroves)
+rename_columns(clean_saltmarshes)
+rename_columns(clean_seagrasses)
+rename_columns(clean_warm_coral)
+```
+
+
+
+Create one data frame
+```{r}
+coastal_ecosystem <- rbind(clean_coldwater_coral, clean_mangroves, clean_saltmarshes, clean_seagrasses, clean_warm_coral)
+```
+Rename column for clarity
+```{r}
+# coastal_ecosystem <- coastal_ecosystem |> 
+#   rename("pc_gdp_2016" = "x2016",
+#          "country_name" = "name",
+#          "cumulative_area" = "total_area")
+```
+
+Change percent protected to proportion protected
+```{r}
+ coastal_ecosystem <- coastal_ecosystem |> 
+  mutate( proportion_protected = (percent_protected /100))
+```
+
+```{r}
+# coastal_ecosystem <- coastal_ecosystem |> 
+# mutate(proportion_protected = ifelse(proportion_protected == 0, proportion_protected + 0.000000000001, proportion_protected)) |> 
+# mutate(proportion_protected = ifelse(proportion_protected == 1, proportion_protected - 0.000000000001, proportion_protected))
+
+```
+
+```{r}
+zeros_and_ones <- function(df, y){
+    n_obs <- sum(!is.na(y))
+    (y * (n_obs - 1) + 0.5) / n_obs
+}
+```
+
 
 # Beta Regression
 ```{r}
-betareg(percent_protected ~ x2016 + ecosystem,
-        data = clean_coldwater_coral,
+betareg(proportion_protected ~ pc_gdp_2016,
+        data = coastal_ecosystem,
         link = "logit")
 ```
 
