@@ -313,12 +313,14 @@ zeros_and_ones <- function(y){
 ```
 
 ```{r}
-coastal_ecosystem <- coastal_ecosystem |> mutate(total_area = as.numeric(total_area))
+coastal_ecosystem <- coastal_ecosystem |> 
+  mutate(total_area = as.numeric(total_area)) |> 
+  mutate(adj_proportion_protected = zeros_and_ones(y = proportion_protected))
 ```
 
 # Beta Regression
 ```{r}
-coastal_ecosystem_model <- betareg(zeros_and_ones(y = proportion_protected) ~ pc_gdp_2016 + total_area + ecosystem,
+coastal_ecosystem_model <- betareg( adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
         data = coastal_ecosystem,
         link = "logit")
 
@@ -364,5 +366,9 @@ warm_coral_model <- betareg(zeros_and_ones(y = proportion_protected) ~ pc_gdp_20
         link = "logit")
 
 summary(warm_coral_model)
+```
+
+```{r}
+# rb
 ```
 
