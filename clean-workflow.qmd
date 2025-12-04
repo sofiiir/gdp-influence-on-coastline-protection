@@ -1,6 +1,14 @@
 ---
 title: "clean-workflow"
-format: html
+format: 
+  html: 
+    code-fold: show
+    embed-resources: true
+execute: 
+  echo: true
+  message: false
+  warning: false
+  error: false
 ---
 
 ```{r}
@@ -344,7 +352,7 @@ mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
 
 
 Now that we have run the Beta Regression let's create a best fit line. 
-
+RE-RUN THIS FOR ALL OF THE DIFFERENT ECOSYSTEM TYPES.
 ```{r}
 pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 0.01, to = 0.99, by = 0.01)) |> 
   mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE),
@@ -366,6 +374,46 @@ ggplot(data = pred, aes(x = pc_gdp_2016, y = predict)) +
 ```
 WHAT DOES THIS MEAN?
 As GDP increases the expected proportion of protected area increases marginally.
+
+BOOTSTRAP 
+```{r}
+boot <-  map_dfr(1:1000, \(i) {
+  
+  boot_sample <- slice_sample(coastal_ecosystem, n=446, replace = TRUE)
+  
+  boot_mod <- betareg(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem, 
+                      data = boot_sample)
+  
+  boot_stat <- summary(boot_mod) 
+  
+  out <- boot_stat$coefficients$mean[ ,1]
+  
+  return(out)
+})
+```
+```{r}
+low_boot_ci <- round(quantile(boot$pc_gdp_2016, probs = 0.025, na.rm = TRUE), 2)
+high_boot_ci <- round(quantile(boot$pc_gdp_2016, probs =  0.975, na.rm = TRUE), 2)
+```
+
+```{r}
+coastal_ecosystem_model$coefficients$mean[]
+```
+
+
+```{r}
+# with(boot$pc_gdp_2016, qnorm(0.025, mean = mean(boot$pc_gdp_2016), sd = sd(boot$pc_gdp_2016)))
+# qnorm(0.975, mean = 0, sd = 1)
+```
+
+
+
+```{r}
+
+# coastal_ecosystem_model$coefficients[]
+
+```
+
 
 
 ```{r}
@@ -389,10 +437,10 @@ As GDP increases the expected proportion of protected area increases marginally.
 # proportion_protected_sim <- rbeta(100000, mu = 1, phi = 0.05)
 ```
 
-
+## Data Simulation 
 ```{r}
-slope <- 250
-intercept <- 4000
+slope <- 0.0002
+intercept <- 0
 mean_gdp_2016 <- 14299.45
 logit_mu <- intercept + slope * mean_gdp_2016
 phi <- 0.0701                   # this is shape1+shape2
@@ -400,7 +448,7 @@ mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 shape1 <- mu * phi
 shape2 <- phi - shape1
 
-# proportion_protected_sim <- rbeta(100000, mu = 1, phi = 0.05)
+# proportion_protected_sim <- rbeta(100000, mu = mu, phi = phi)
 ```
 
 
