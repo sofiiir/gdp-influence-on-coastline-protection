@@ -283,6 +283,18 @@ Create one data frame
 coastal_ecosystem <- rbind(clean_coldwater_coral, clean_mangroves, clean_saltmarshes, clean_seagrasses, clean_warm_coral)
 ```
 
+Initial plot of the 
+```{r}
+ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016, y = percent_protected )) +
+  geom_point(aes(color = ecosystem),
+             colours = c("#773344", "forestgreen", "#273E47", "#9BC1BC", "#ED6A5A")) +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Areas by GDP")) +
+  theme_classic()
+```
+
+
 The Beta Regression model only works on proportion so here we change `percent_protected` to `proportion_protected`.
 ```{r}
  coastal_ecosystem <- coastal_ecosystem |> 
@@ -314,3 +326,45 @@ coastal_ecosystem_model <- betareg(adj_proportion_protected ~ pc_gdp_2016 + tota
 
 summary(coastal_ecosystem_model)
 ```
+
+Now that we have run the Beta Regression let's create a best fit line. 
+
+```{r}
+pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 0.01, to = 0.99, by = 0.01)) |> 
+  mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE),
+         ecosystem = 'coldwater_coral')
+```
+
+Run the model to predict expected protected proportion based when holding all variables constant but one. 
+```{r}
+pred <- pred_grid |> 
+  mutate(predict =  predict(object = coastal_ecosystem_model,
+                          newdata = pred_grid,
+                          type = "response"))
+```
+
+Let's plot the predictions.
+```{r}
+ggplot(data = pred, aes(x = pc_gdp_2016, y = predict)) +
+  geom_line()
+```
+WHAT DOES THIS MEAN?
+As GDP increases the expected proportion of protected area increases marginally.
+
+
+```{r}
+beta_model_se <- predict(object = coastal_ecosystem_model,
+                          newdata = pred_grid,
+                          type = "link", # stay in link space
+                          se.fit = TRUE) #get the SE of the fit
+
+```
+
+```{r}
+
+```
+
+
+
+
+
