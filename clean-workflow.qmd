@@ -285,9 +285,15 @@ coastal_ecosystem <- rbind(clean_coldwater_coral, clean_mangroves, clean_saltmar
 
 Initial plot of the 
 ```{r}
-ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016, y = percent_protected )) +
-  geom_point(aes(color = ecosystem),
-             colours = c("#773344", "forestgreen", "#273E47", "#9BC1BC", "#ED6A5A")) +
+ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016, 
+                                     y = percent_protected, 
+                                     color = ecosystem)) +
+  geom_point() +
+  scale_color_manual(values = c("#773344", 
+                                "forestgreen", 
+                                "#273E47", 
+                                "#9BC1BC", 
+                                "#ED6A5A"))+
   labs(x= "GDP",
        y = "Percent protected",
        title = print("2016 Percent Protected Areas by GDP")) +
@@ -317,6 +323,12 @@ coastal_ecosystem <- coastal_ecosystem |>
 ```
 
 # Beta Regression
+$$
+\begin{align}
+\text{Proportion} &\sim BetaRegression(\mu, \phi) \\
+logit(\mu) &= \beta_0 + \beta_1 \text{Predictor}
+\end{align}
+$$
 
 Fit a Beta Regression model. The Beta Regression model is useful when the response is a proportion. Since the protected areas is between 0 and 100 percent this model will assess whether there is any relationship between the predictors and the response. 
 ```{r}
@@ -353,15 +365,24 @@ As GDP increases the expected proportion of protected area increases marginally.
 
 
 ```{r}
-beta_model_se <- predict(object = coastal_ecosystem_model,
-                          newdata = pred_grid,
-                          type = "link", # stay in link space
-                          se.fit = TRUE) #get the SE of the fit
+# beta_model_se <- predict.betareg(object = coastal_ecosystem_model,
+#                           newdata = pred_grid,
+#                           type = "link", # stay in link space
+#                           se.fit = TRUE) #get the SE of the fit
 
 ```
 
 ```{r}
+slope <- 
+intercept <- 
+pc_gdp_2016 <- 300
+logit_mu <- intercept + slope * pc_gdp_2016
+phi <- 26.64                   # this is shape1+shape2
+mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
+shape1 <- mu * phi
+shape2 <- phi - shape1
 
+proportion_protected_sim <- rbeta(100000, phi = 1, sd = 0.05)
 ```
 
 
