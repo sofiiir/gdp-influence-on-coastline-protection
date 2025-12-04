@@ -265,7 +265,7 @@ clean_warm_coral <- clean_warm_coral |> select("iso_ter", "total_area", "protect
 ```{r}
 rename_columns <- function (df) {
     df <- df |> rename("pc_gdp_2016" = "x2016",
-         "country_name" = "name")
+         "country" = "name")
 }
 ```
 
@@ -283,12 +283,13 @@ Create one data frame
 coastal_ecosystem <- rbind(clean_coldwater_coral, clean_mangroves, clean_saltmarshes, clean_seagrasses, clean_warm_coral)
 ```
 
-Change percent protected to proportion protected
+The Beta Regression model only works on proportion so here we change `percent_protected` to `proportion_protected`.
 ```{r}
  coastal_ecosystem <- coastal_ecosystem |> 
   mutate( proportion_protected = (percent_protected /100))
 ```
 
+The Beta Regression model uses the link function logit. Logit does not work on 0's and 1's. We need to adjust the data to transform any 0's and 1's to slightly above 0 and slightly below 1. Here's a function created based on the vignette's description of how to handle these values. 
 ```{r}
 zeros_and_ones <- function(y){
     n_obs <- sum(!is.na(y))
@@ -296,6 +297,7 @@ zeros_and_ones <- function(y){
 }
 ```
 
+Adjust the non-numeric values to numeric and apply the `zeros_and_ones` function to our proportion data.
 ```{r}
 coastal_ecosystem <- coastal_ecosystem |> 
   mutate(total_area = as.numeric(total_area)) |> 
@@ -303,8 +305,10 @@ coastal_ecosystem <- coastal_ecosystem |>
 ```
 
 # Beta Regression
+
+Fit a Beta Regression model. The Beta Regression model is useful when the response is a proportion. Since the protected areas is between 0 and 100 percent this model will assess whether there is any relationship between the predictors and the response. 
 ```{r}
-coastal_ecosystem_model <- betareg( adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
+coastal_ecosystem_model <- betareg(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
         data = coastal_ecosystem,
         link = "logit")
 
