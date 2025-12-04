@@ -338,6 +338,10 @@ coastal_ecosystem_model <- betareg(adj_proportion_protected ~ pc_gdp_2016 + tota
 
 summary(coastal_ecosystem_model)
 ```
+```{r}
+mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
+```
+
 
 Now that we have run the Beta Regression let's create a best fit line. 
 
@@ -373,16 +377,30 @@ As GDP increases the expected proportion of protected area increases marginally.
 ```
 
 ```{r}
-slope <- 
-intercept <- 
-pc_gdp_2016 <- 300
-logit_mu <- intercept + slope * pc_gdp_2016
-phi <- 26.64                   # this is shape1+shape2
+# slope <- -1.612e+00
+# intercept <- 1.845e-05
+# mean_gdp_2016 <- 14299.45
+# logit_mu <- intercept + slope * mean_gdp_2016
+# phi <- 1.0701                   # this is shape1+shape2
+# mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
+# shape1 <- mu * phi
+# shape2 <- phi - shape1
+
+# proportion_protected_sim <- rbeta(100000, mu = 1, phi = 0.05)
+```
+
+
+```{r}
+slope <- 250
+intercept <- 4000
+mean_gdp_2016 <- 14299.45
+logit_mu <- intercept + slope * mean_gdp_2016
+phi <- 0.0701                   # this is shape1+shape2
 mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 shape1 <- mu * phi
 shape2 <- phi - shape1
 
-proportion_protected_sim <- rbeta(100000, phi = 1, sd = 0.05)
+# proportion_protected_sim <- rbeta(100000, mu = 1, phi = 0.05)
 ```
 
 
