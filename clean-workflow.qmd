@@ -354,7 +354,7 @@ mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
 Now that we have run the Beta Regression let's create a best fit line. 
 RE-RUN THIS FOR ALL OF THE DIFFERENT ECOSYSTEM TYPES.
 ```{r}
-pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 0.01, to = 0.99, by = 0.01)) |> 
+pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500)) |> 
   mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE),
          ecosystem = 'coldwater_coral')
 ```
@@ -397,7 +397,7 @@ high_boot_ci <- round(quantile(boot$pc_gdp_2016, probs =  0.975, na.rm = TRUE), 
 ```
 
 ```{r}
-coastal_ecosystem_model$coefficients$mean[]
+coastal_ecosystem_model$coefficients$cond[]
 ```
 
 
@@ -411,6 +411,10 @@ coastal_ecosystem_model$coefficients$mean[]
 ```{r}
 
 # coastal_ecosystem_model$coefficients[]
+
+```
+Calculating Confidence Interval by hand.
+```{r}
 
 ```
 
