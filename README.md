@@ -12,25 +12,7 @@ This repository investigates the hypothesis that nations with higher per capita 
 
 ## File structure:
 
-.
-├── beta-regression.qmd
-├── data
-│   ├── imf-dm-export-20251011.csv
-│   ├── imf-dm-export-20251011.xls
-│   └── Ocean+HabitatsDownload_Global
-│       ├── coastline_coverage.csv
-│       ├── coldwatercorals.csv
-│       ├── global-stats.xlsx
-│       ├── mangroves.csv
-│       ├── saltmarshes.csv
-│       ├── seagrasses.csv
-│       └── warmwatercorals.csv
-├── data-cleaning.qmd
-├── gdp_coastal_ecosystem.csv
-├── gdp-influence-on-coastline-protection.Rproj
-├── practice
-│  
-└── README.md
+<img width="348" height="240" alt="Screenshot 2025-12-05 at 12 14 32 AM" src="https://github.com/user-attachments/assets/29f86cf6-a248-4088-b1be-9da08539d553" />
 
 Note: The original downloaded data is not in this git repository. It can be downloaded from its original sources.
 
