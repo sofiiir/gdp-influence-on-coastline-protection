@@ -1,6 +1,8 @@
 # GPD-Influence-on-Coastline-Protection
 ### Author: Sofia Rodas
 
+<img width="704" height="452" alt="Screenshot 2025-12-05 at 1 14 56 AM" src="https://github.com/user-attachments/assets/1f02ca89-628d-4bf6-a66d-ba717adace78" />
+
 ## Purpose
 This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastlines. 
 
