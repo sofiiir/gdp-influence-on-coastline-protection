@@ -1,5 +1,7 @@
 ---
 title: "clean-workflow"
+author: "Sofia Rodas"
+date: December 4, 2025
 format: 
   html: 
     code-fold: show
@@ -79,31 +81,45 @@ beta1 <- 1.9
 # gdp <- seq(from = 433, to = 71000, by = 500)
 # total_area <- seq(from = 0, to = 68100, by = 500)
 
-
+# simulate numeric predictor values 
 gdp <- runif(1000, 0.433, 0.71)
 total_area <- runif(1000, 0, 16)
 
+# simulate categorical predictor vales
 ecosystem <- rep(c('coldwater_coral', 'mangrove', 'saltmarsh', 'seagrass', 'warmwater_coral'), length.out = 1000)
 
+# linkspace equation
 logit_mu <- beta0 + beta1 * gdp
 
+# assign value to phi 
 phi <- 15 # this is shape1+shape2
-mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 
+# calculate mu based on betas and simulated data 
+mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
+```
+
+To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated. 
+```{r}
+# calculate the 
 shape1 <- mu * phi
 shape2 <- phi - shape1
 
+# simulate response data based on parameters assigned above 
 proportion_protected_sim <- rbeta(1000, shape1 = shape1, shape2 = shape2)
 
+# create a dataframe with all of the variables
 sim_df <- tibble(proportion_protected_sim, gdp , total_area, ecosystem)
 
+# simulate the model based on the simulated data 
 sim_model <- glmmTMB(proportion_protected_sim ~ gdp + total_area + ecosystem,
   data = sim_df,
   family = beta_family(link = "logit"))
 
+# make sure the values are close to the assigned variables
 summary(sim_model)
-
 ```
+
+Our model outputs values close to the values we originally assigned to the variables. We understand our model enough to move onto fitting the model on our own data!
 
 # Data preparation
 
@@ -113,7 +129,7 @@ The Beta Regression model only works on proportion so here we change `percent_pr
   mutate( proportion_protected = (percent_protected /100))
 ```
 
-The Beta Regression model uses the link function logit. Logit does not work on 0's and 1's. We need to adjust the data to transform any 0's and 1's to slightly above 0 and slightly below 1. Here's a function created based on the vignette's description of how to handle these values. 
+The Beta Regression model uses the link function `logit`. Logit does not work on 0's and 1's. We need to adjust the data to transform any 0's and 1's to slightly above 0 and slightly below 1. Here's a function created based on the vignette's description of how to handle these values. 
 ```{r}
 zeros_and_ones <- function(y){
     n_obs <- sum(!is.na(y))
@@ -149,18 +165,11 @@ sum_coastal_ecosystem_mod
 
 
 ```{r}
-# coastal_ecosystem_model <- betareg(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
-#         data = coastal_ecosystem,
-#         link = "logit")
-# 
-# summary(coastal_ecosystem_model)
-```
-```{r}
 mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
 ```
 
 
-Now that we have run the Beta Regression let's create a best fit line. 
+Now that we have run the Beta Regression let's create a best fit line. We create data that shows the spread of the potential values for GDP. Here we use `seq()` to create values from our lowest value to our highest value by a specific interval. We want to keep the rest of the variables constant so we use the mean of the numeric variables and choose one of the categorical options to hold as the constant. R chooses categorical reference variables by alphabetical order so we're doing the same here. 
 
 ```{r}
 pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500)) |> 
@@ -181,12 +190,8 @@ Let's plot the predictions.
 ggplot(data = pred, aes(x = pc_gdp_2016, y = predict)) +
   geom_line()
 ```
-WHAT DOES THIS MEAN?
-As GDP increases the expected proportion of protected area increases marginally.
-
-
-
-
+#### What does this mean?
+As GDP increases the expected proportion of protected area increases.
 
 ### Confidence Interval
 Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the Beta Regression models do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
