@@ -1,0 +1,88 @@
+---
+title: "warm-corals"
+format: html
+---
+```{r}
+# load in appropriate libraries
+library(DescTools)
+library(tidyverse)
+```
+
+## Address differences in names between gdp data and protected coastline data
+```{r}
+# use data from DescTools package to address 
+country_names <- d.countries
+
+# subset for only necessary columns
+country_names <- country_names[, c('name', 'a3')]
+
+country_names <- country_names |> 
+   rename("iso_ter" = "a3")
+```
+
+```{r}
+# read in GDP data
+gdp <- read_csv(here::here("data", "imf-dm-export-20251011.csv"))
+
+# clean names for
+gdp <-  janitor::clean_names(gdp)
+
+# change column name to the same as the other dfs
+gdp <- gdp |> 
+   rename("name" = "gdp_per_capita_current_prices_u_s_dollars_per_capita")
+
+# filter for only necessary 
+gdp <- gdp[, c('name', 'x2016')]
+```
+
+```{r}
+# read in warm water corals data
+warm_coral <- read_csv(here::here("data", "Ocean+HabitatsDownload_Global", "warmwatercorals.csv"))
+
+warm_coral <- warm_coral |> 
+   rename("iso_ter" = "ISO3") 
+
+# join with country names
+warm_coral <- full_join(warm_coral, country_names, by = 'iso_ter')
+```
+
+Make a graph showing any possible correlation of GDP to percent of protected warm water corals. 
+```{r}
+# join mangrove and gdp data
+warm_coral_gdp <- full_join(warm_coral, gdp, by = 'name')
+```
+
+We need to filter for only countries that have warm water corals
+```{r}
+#| output: false
+
+# look at the unique values for mangrove total area
+unique(warm_coral_gdp$total_area)
+
+# filter out - and NA for total area
+warm_coral_gdp <- warm_coral_gdp |> 
+  filter((total_area!= "-"), (total_area != "NA") )
+```
+Filter for countries with available GDP data for 2016.
+```{r}
+warm_coral_gdp <- warm_coral_gdp |> 
+  filter(!is.na(x2016) )
+```
+Almost none of the data from this data frame is numeric. Change the data type for those values needed to graph to numeric. 
+```{r}
+# change the gdp data to numeric
+warm_coral_gdp <- transform(warm_coral_gdp, x2016 = as.numeric(x2016))
+
+# change percent protected to numeric
+warm_coral_gdp <- transform(warm_coral_gdp, percent_protected = as.numeric(percent_protected))
+```
+
+Initial plot
+```{r}
+plot_warm_corrals <- ggplot(data = warm_coral_gdp, aes(x = x2016, y = percent_protected )) +
+  geom_point(color = "coral") +
+  labs(x= "GDP",
+       y = "Percent protected",
+       title = "2016 Percent Protected Warm Water Corals by GDP") +
+  theme_classic()
+```

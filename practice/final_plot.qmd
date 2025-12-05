@@ -1,0 +1,12 @@
+---
+title: "final_plot"
+format: html
+---
+```{r}
+library(patchwork)
+```
+
+```{r}
+plot_mangroves + plot_corral + plot_saltmarshes
+```
+
