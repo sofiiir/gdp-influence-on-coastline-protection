@@ -22,6 +22,7 @@ library(tidyverse)
 library(patchwork)
 library(betareg)
 library(glmmTMB)
+library(kableExtra)
 ```
 
 # Purpose
@@ -226,27 +227,42 @@ beta0_CI_upr <- beta0 + se[1]
 
 # Beta 1 confidence intervals
 beta1_CI_lwr <- beta1 - se[2]
-beta1_CI_lwr <- beta1 + se[2]
+beta1_CI_upr <- beta1 + se[2]
 
 # Beta 2 confidence intervals
 beta2_CI_lwr <- beta2 - se[3]
-beta2_CI_lwr <- beta2 + se[3]
+beta2_CI_upr <- beta2 + se[3]
 
 # Beta 3 mangrove confidence intervals
 beta3_man_CI_lwr <- beta3_mangroves - se[4]
-beta3_man_CI_lwr <- beta3_mangroves + se[4]
+beta3_man_CI_upr <- beta3_mangroves + se[4]
 
 # Beta 3 saltmarsh confidence intervals
 beta3_salt_CI_lwr <- beta3_saltmarsh - se[5]
-beta3_salt_CI_lwr <- beta3_saltmarsh + se[5]
+beta3_salt_CI_upr <- beta3_saltmarsh + se[5]
 
 # Beta 3 seagrass confidence intervals
 beta3_seag_CI_lwr <- beta3_seagrass - se[6]
-beta3_seag_CI_lwr <- beta3_seagrass + se[6]
+beta3_seag_CI_upr <- beta3_seagrass + se[6]
 
 # Beta 3 confidence intervals
 beta3_wwc_CI_lwr <- beta3_warmwater_coral - se[7]
-beta3_wwc_CI_lwr <- beta3_warmwater_coral + se[7]
+beta3_wwc_CI_upr <- beta3_warmwater_coral + se[7]
+
+```
+
+Create a dataframe with the confidence interval values.
+```{r}
+CI_df <- tibble(
+  Variable = c("Intercept", "GDP", "Total Area", "Mangroves", "Saltmarsh", "Seagrass", "Warm-water Coral"),
+  Betas = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
+  LowerCI = c(beta0_CI_lwr, beta1_CI_lwr, beta2_CI_lwr, beta3_man_CI_lwr, beta3_salt_CI_lwr, beta3_seag_CI_lwr, beta3_wwc_CI_lwr),
+  UpperCI =c(beta0_CI_upr, beta1_CI_upr, beta2_CI_upr, beta3_man_CI_upr, beta3_salt_CI_upr, beta3_seag_CI_upr, beta3_wwc_CI_upr)
+) 
+
+CI_df |> 
+  kable() |> 
+  kable_styling()
 
 ```
 
