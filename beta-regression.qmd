@@ -22,6 +22,8 @@ library(tidyverse)
 library(patchwork)
 library(glmmTMB)
 library(kableExtra)
+
+set.seed(12)
 ```
 
 # Purpose
@@ -78,13 +80,12 @@ The model has three additive predictors. All of these predictors should have the
 beta0 <- 0.6
 beta1 <- 1.9
 
-
 # simulate the predictor data
 # gdp <- seq(from = 433, to = 71000, by = 500)
 # total_area <- seq(from = 0, to = 68100, by = 500)
 
 # simulate numeric predictor values 
-gdp <- runif(1000, 0.433, 0.71)
+gdp <- runif(10000, 0.433, 0.71)
 
 # linkspace equation
 logit_mu <- beta0 + beta1 * gdp
@@ -103,7 +104,7 @@ shape1 <- mu * phi
 shape2 <- phi - shape1
 
 # simulate response data based on parameters assigned above 
-proportion_protected_sim <- rbeta(1000, shape1 = shape1, shape2 = shape2)
+proportion_protected_sim <- rbeta(10000, shape1 = shape1, shape2 = shape2)
 
 # create a dataframe with all of the variables
 sim_df <- tibble(proportion_protected_sim, gdp )
@@ -146,7 +147,15 @@ coastal_ecosystem <- coastal_ecosystem |>
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
-logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Ecosystem}
+logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
+\end{align}
+$$
+### Hypothesis
+
+$$
+\begin{align}
+H_0 &: \beta_1 = 0 \\
+H_A &: \beta_1 != 0
 \end{align}
 $$
 
@@ -170,14 +179,14 @@ mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
 Now that we have run the Beta Regression let's create a best fit line. We create data that shows the spread of the potential values for GDP. Here we use `seq()` to create values from our lowest value to our highest value by a specific interval. We want to keep the rest of the variables constant so we use the mean of the numeric variables and choose one of the categorical options to hold as the constant. R chooses categorical reference variables by alphabetical order so we're doing the same here. 
 
 ```{r}
-pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500)) |> 
-  mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE),
-         ecosystem = 'coldwater_coral')
+pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500),
+                            ecosystem = unique(coastal_ecosystem$ecosystem)) |> 
+  mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE))
 ```
 
 Run the model to predict expected protected proportion based when holding all variables constant but one. 
 ```{r}
-pred <- pred_grid |> 
+coastal_model_pred <- pred_grid |> 
   mutate(predict =  predict(object = coastal_ecosystem_model,
                           newdata = pred_grid,
                           type = "response"))
@@ -185,22 +194,84 @@ pred <- pred_grid |>
 
 Let's plot the predictions.
 ```{r}
-ggplot(data = pred, aes(x = pc_gdp_2016, y = predict)) +
-  geom_line()
+ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
+  geom_line(aes(color = ecosystem))+
+  theme_minimal()
 ```
 #### What does this mean?
 As GDP increases the expected proportion of protected area increases.
 
 ### Confidence Interval
-Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the Beta Regression models do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
+We can use the predict function to calculate confidence intervals. Unfortunately, the Beta Regression models do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
 ```{r}
-#| eval: false
-
-beta_model_se <- predict(object = coastal_ecosystem_model,
+coastal_model_se <- predict(object = coastal_ecosystem_model,
                           newdata = pred_grid,
                           type = "link", # stay in link space
-                          se.fit = TRUE) #get the SE of the fit
+                          se.fit = TRUE,
+                          component = "cond") # get the SE of the fit
 
+```
+
+```{r}
+# go from link space to response space
+linkinv <- family(coastal_ecosystem_model)$linkinv
+coastal_model_se <- pred_grid |> 
+  mutate(
+    # get logit(mu)
+    logit_mu = coastal_model_se$fit,
+    # 95% in link space
+    logit_mu_se = coastal_model_se$se.fit,
+    logit_mu_lwr = qnorm(0.025, mean = logit_mu, sd = logit_mu_se),
+    logit_mu_upr = qnorm(0.975, mean = logit_mu, sd = logit_mu_se),
+    # undo the link function using the linkinv
+    mu = linkinv(logit_mu),
+    mu_lwr = linkinv(logit_mu_lwr),
+    mu_upr = linkinv(logit_mu_upr)
+  )
+```
+
+```{r}
+ggplot(coastal_model_se, aes(x = pc_gdp_2016, y = mu))+
+  geom_ribbon(aes(ymin = mu_lwr, ymax = mu_upr), alpha = 0.2) +
+  geom_line()+
+  theme_minimal()
+
+```
+
+
+BOOTSTRAP 
+```{r}
+boot <-  map_dfr(1:1000, \(i) {
+
+  boot_sample <- slice_sample(coastal_ecosystem, n=446, replace = TRUE)
+  
+  boot_mod <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
+                      family = beta_family(link = "logit"),
+                      data = boot_sample)
+
+    # add a prediction step
+  mutate(pred_grid,
+         adj_prop_protected = predict(object = boot_mod,
+                          newdata = pred_grid,
+                          type = "response"),
+         boot = i)
+})
+
+# ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
+#   geom_line(aes(color = ecosystem))
+
+boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |> 
+  summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
+            adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
+
+ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
+  geom_ribbon(data = boot_ci, aes(ymin = adj_prop_protected_lwr, ymax = adj_prop_protected_upr, fill = ecosystem)) +
+  geom_line(aes(color = ecosystem, y = predict)) 
+```
+CI ped
+```{r}
+# low_boot_ci <- round(quantile(boot$pc_gdp_2016, probs = 0.025, na.rm = TRUE), 2)
+# high_boot_ci <- round(quantile(boot$pc_gdp_2016, probs =  0.975, na.rm = TRUE), 2)
 ```
 
 The values from our summary model are utilized to create this data.
