@@ -85,10 +85,6 @@ beta1 <- 1.9
 
 # simulate numeric predictor values 
 gdp <- runif(1000, 0.433, 0.71)
-total_area <- runif(1000, 0, 16)
-
-# simulate categorical predictor vales
-ecosystem <- rep(c('coldwater_coral', 'mangrove', 'saltmarsh', 'seagrass', 'warmwater_coral'), length.out = 1000)
 
 # linkspace equation
 logit_mu <- beta0 + beta1 * gdp
@@ -110,10 +106,10 @@ shape2 <- phi - shape1
 proportion_protected_sim <- rbeta(1000, shape1 = shape1, shape2 = shape2)
 
 # create a dataframe with all of the variables
-sim_df <- tibble(proportion_protected_sim, gdp , total_area, ecosystem)
+sim_df <- tibble(proportion_protected_sim, gdp )
 
 # simulate the model based on the simulated data 
-sim_model <- glmmTMB(proportion_protected_sim ~ gdp + total_area + ecosystem,
+sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
   data = sim_df,
   family = beta_family(link = "logit"))
 
