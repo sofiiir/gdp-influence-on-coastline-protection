@@ -27,6 +27,8 @@ library(kableExtra)
 # Purpose
 This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastlines. 
 
+
+
 # Data
 The original data comes from the [Ocean+Habitats](https://habitats.oceanplus.org/) webpage which works to inform policy about the state of our oceans coastline focusing on metrics concerning ocean protection. This analysis focuses on the five ecosystems for which data is available. The five ecosystems are cold-water corals, mangroves, seagrasses, saltmarshes, and warm-water corals.
 
@@ -63,7 +65,7 @@ Here is our proposed model based on our understanding of the variable interactio
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
-logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Ecosystem}
+logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
 \end{align}
 $$
 
