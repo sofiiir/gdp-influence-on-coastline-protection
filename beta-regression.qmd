@@ -268,7 +268,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   geom_ribbon(data = boot_ci, aes(ymin = adj_prop_protected_lwr, ymax = adj_prop_protected_upr, fill = ecosystem)) +
   geom_line(aes(color = ecosystem, y = predict)) 
 ```
-CI ped
+CI on the prediction is showing the confidence intervals when all of the variables influence are accounted for as opposed to the CI of the individual predictors showing the CI only based on that one variable. 
 ```{r}
 # low_boot_ci <- round(quantile(boot$pc_gdp_2016, probs = 0.025, na.rm = TRUE), 2)
 # high_boot_ci <- round(quantile(boot$pc_gdp_2016, probs =  0.975, na.rm = TRUE), 2)
