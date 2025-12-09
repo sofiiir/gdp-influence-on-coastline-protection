@@ -15,6 +15,7 @@ execute:
 
 ```{r}
 #| output: false
+#| code-fold: true
 
 # load in appropriate libraries
 library(DescTools)
@@ -204,6 +205,7 @@ As GDP increases the expected proportion of protected area increases.
 ### Confidence Interval
 We can use the predict function to calculate confidence intervals. Unfortunately, the Beta Regression models do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
 ```{r}
+#| eval: false
 coastal_model_se <- predict(object = coastal_ecosystem_model,
                           newdata = pred_grid,
                           type = "link", # stay in link space
@@ -213,6 +215,8 @@ coastal_model_se <- predict(object = coastal_ecosystem_model,
 ```
 
 ```{r}
+#| eval: false
+
 # go from link space to response space
 linkinv <- family(coastal_ecosystem_model)$linkinv
 coastal_model_se <- pred_grid |> 
@@ -231,6 +235,8 @@ coastal_model_se <- pred_grid |>
 ```
 
 ```{r}
+#| eval: false
+
 ggplot(coastal_model_se, aes(x = pc_gdp_2016, y = mu))+
   geom_ribbon(aes(ymin = mu_lwr, ymax = mu_upr), alpha = 0.2) +
   geom_line()+
@@ -259,13 +265,18 @@ boot <-  map_dfr(1:1000, \(i) {
 
 # ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
 #   geom_line(aes(color = ecosystem))
+```
 
+
+```{r}
 boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |> 
   summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
 
 ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
-  geom_ribbon(data = boot_ci, aes(ymin = adj_prop_protected_lwr, ymax = adj_prop_protected_upr, fill = ecosystem)) +
+  geom_ribbon(data = boot_ci, aes(ymin = adj_prop_protected_lwr, 
+                                  ymax = adj_prop_protected_upr, 
+                                  fill = ecosystem)) +
   geom_line(aes(color = ecosystem, y = predict)) 
 ```
 CI on the prediction is showing the confidence intervals when all of the variables influence are accounted for as opposed to the CI of the individual predictors showing the CI only based on that one variable. 
@@ -276,6 +287,8 @@ CI on the prediction is showing the confidence intervals when all of the variabl
 
 The values from our summary model are utilized to create this data.
 ```{r}
+#| code-fold: true
+
 beta0 <- sum_coastal_ecosystem_mod$coefficients$cond[1]
 beta1 <- sum_coastal_ecosystem_mod$coefficients$cond[2]
 beta2 <- sum_coastal_ecosystem_mod$coefficients$cond[3]
@@ -289,6 +302,8 @@ se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
 
 Confidence intervals are then calculated subtracting and adding one standard error from each beta value.
 ```{r}
+#| code-fold: true
+
 # Beta 0 confidence intervals
 beta0_CI_lwr <- beta0 - se[1]
 beta0_CI_upr <- beta0 + se[1]
@@ -321,6 +336,8 @@ beta3_wwc_CI_upr <- beta3_warmwater_coral + se[7]
 
 Create a dataframe with the confidence interval values.
 ```{r}
+#| code-fold: true
+
 CI_df <- tibble(
   Variable = c("Intercept", "GDP", "Total Area", "Mangroves", "Saltmarsh", "Seagrass", "Warm-water Coral"),
   Betas = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
