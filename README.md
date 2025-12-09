@@ -27,7 +27,9 @@ Note: The original downloaded data is not in this git repository. It can be down
 
 ## References 
 
-IMF. 2023. World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF. https://doi.org/10.5089/9798400235801.081
+Brooks, M., Kristensen K., Maechler M., Magnusson A., McGillycuddy M., Skaug H., Nielsen A., Berg C., van Bentham K., Sadat N., Lüdecke D., Lenth R., O'Brien J., Geyer C.J., Jagan M., Wiernik B., Stouffer D.B., Agronah M., Akdur H.T.K., Bové D.S., and Krieger N. Package ‘glmmTMB’ (CRAN). (Oct. 9, 2025). [https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf)
 
-UNEP-WCMC (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
+IMF. (2023). World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF. https://doi.org/10.5089/9798400235801.081
+
+UNEP-WCMC. (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
 
