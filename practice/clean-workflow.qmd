@@ -455,7 +455,45 @@ shape2 <- phi - shape1
 # proportion_protected_sim <- rbeta(100000, mu = mu, phi = phi)
 ```
 
+IF THE PREDICT FUNCTION WORKED THIS IS HOW CONFIDENCE INTERVALS WOULD BE CALCULATED. 
+```{r}
+#| eval: false
 
+coastal_model_se <- predict(object = coastal_ecosystem_model,
+                          newdata = pred_grid,
+                          type = "link", # stay in link space
+                          se.fit = TRUE,
+                          component = "cond") # get the SE of the fit
 
+```
 
+```{r}
+#| eval: false
+
+# go from link space to response space
+linkinv <- family(coastal_ecosystem_model)$linkinv
+coastal_model_se <- pred_grid |> 
+  mutate(
+    # get logit(mu)
+    logit_mu = coastal_model_se$fit,
+    # 95% in link space
+    logit_mu_se = coastal_model_se$se.fit,
+    logit_mu_lwr = qnorm(0.025, mean = logit_mu, sd = logit_mu_se),
+    logit_mu_upr = qnorm(0.975, mean = logit_mu, sd = logit_mu_se),
+    # undo the link function using the linkinv
+    mu = linkinv(logit_mu),
+    mu_lwr = linkinv(logit_mu_lwr),
+    mu_upr = linkinv(logit_mu_upr)
+  )
+```
+
+```{r}
+#| eval: false
+
+ggplot(coastal_model_se, aes(x = pc_gdp_2016, y = mu))+
+  geom_ribbon(aes(ymin = mu_lwr, ymax = mu_upr), alpha = 0.2) +
+  geom_line()+
+  theme_minimal()
+
+```
 
