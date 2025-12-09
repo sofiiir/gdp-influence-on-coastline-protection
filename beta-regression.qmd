@@ -263,8 +263,8 @@ boot <-  map_dfr(1:1000, \(i) {
          boot = i)
 })
 
-# ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
-#   geom_line(aes(color = ecosystem))
+ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
+  geom_line(aes(color = ecosystem))
 ```
 
 
@@ -279,7 +279,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                                   fill = ecosystem)) +
   geom_line(aes(color = ecosystem, y = predict)) 
 ```
-CI on the prediction is showing the confidence intervals when all of the variables influence are accounted for as opposed to the CI of the individual predictors showing the CI only based on that one variable. 
+The Confidence Intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation.  On the other hand the Confidence Intervals of the individual predictors show the confidence interval only based on that one variable. 
 ```{r}
 # low_boot_ci <- round(quantile(boot$pc_gdp_2016, probs = 0.025, na.rm = TRUE), 2)
 # high_boot_ci <- round(quantile(boot$pc_gdp_2016, probs =  0.975, na.rm = TRUE), 2)
