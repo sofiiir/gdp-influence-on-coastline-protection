@@ -28,7 +28,9 @@ set.seed(12)
 ```
 
 # Purpose
-This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastlines. This hypothesis is derived from the general knowledge that protecting ecosystems takes a large amount of resources. Policy must be put in place to create these protected areas. Countries with a higher GDP per capita would have a greater amount of resources to spend on creating these zones. 
+This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastal ecosystems. This hypothesis is derived from the general knowledge that protecting ecosystems takes a large amount of resources. Policy must be put in place to create these protected areas. Countries with a higher per capita GDP would, in theory, have a greater amount of resources to spend on creating these zones. 
+
+The type of ecosystem and the total area of a specific type of coastal ecosystem are also included in this analysis as they are confounding variables. The directed acyclic graph shows that the ecosystem type affects the proportion that is protected. Some ecosystems are more valuable for a nation monetarily if they are not protected. Additionally, depending on the type of protection of an ecosystem, officially protecting an area may be implausible as surrounding communities may be reliant on the ecosystem to make a living and/or eat. Total area is another confounding variable for proportion protected area as the more area a nation has of a specific ecosystem the less area they need to protect to achieve a higher percentage of proportion protected area. One example in which I would expect this to largely influence proportion protected area is in small island nations where they have a large area of coastal ecosystems. Even if they protect a greater area than another nation their proportion of protected area may be low. 
 
 
 
@@ -247,7 +249,7 @@ coastal_model_se <- predict(object = coastal_ecosystem_model,
 ### Prediction confidence intervals
 #### Bootstrap
 
-We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps by definition are run on our original data. Samples are selected from the original data with replacement  Below we are running a bootstrap 1000 times. 
+We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps by definition are run on our original data. Samples are selected from the original data with replacement. Since we have 446 rows of data in our data frame, we can choose to select 446 samples in the boot per bootstrap calculated. Below we are running a bootstrap 1000 times. 
 
 ```{r}
 boot <-  map_dfr(1:1000, \(i) {
@@ -292,6 +294,7 @@ boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |>
   summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
 
+
 ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   geom_ribbon(data = boot_ci, 
               aes(ymin = adj_prop_protected_lwr, 
@@ -299,11 +302,22 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                          fill = ecosystem), 
               alpha = 0.2) +
   scale_color_manual(name = "Ecosystem",
-                     values = c("#D51977", 
-                                "forestgreen", 
-                                "#273E47", 
-                                "#9BC1BC", 
-                                "#FEA82F"),
+                     values = c(coldwater_coral = "#D51977", 
+                                mangroves = "forestgreen", 
+                                saltmarshes = "#273E47", 
+                                seagrasses = "#9BC1BC", 
+                                warm_coral = "#FEA82F"),
+                     labels = c("Cold-water coral",
+                                "Mangroves", 
+                                "Salt marsh",
+                                "Seagrass",
+                                "Warm-water coral")) +
+  scale_fill_manual(name = "Ecosystem",
+                     values = c(coldwater_coral = "#D51977", 
+                               mangroves = "forestgreen", 
+                                saltmarshes = "#273E47", 
+                               seagrasses = "#9BC1BC", 
+                                warm_coral = "#FEA82F"),
                      labels = c("Cold-water coral",
                                 "Mangroves", 
                                 "Salt marsh",
@@ -315,7 +329,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_minimal()
 ```
-The Confidence Intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation.  On the other hand the Confidence Intervals of the individual predictors show the confidence interval only based on that one variable. 
+The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. On the other hand the confidence intervals of the individual predictors show the confidence interval only based on that one variable. 
 
 The values from our summary model are utilized to create this data.
 ```{r}
