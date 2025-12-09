@@ -158,15 +158,15 @@ $$
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
 \end{align}
 $$
-### Hypothesis Statistical notation
+## Hypothesis Statistical notation
 
 $$
 \begin{align}
-H_0 &: \beta_1 = 0 \\
-H_A &: \beta_1 > 0
+H_0 &: \beta_1 > 0 \\
+H_A &: \beta_1 !> 0
 \end{align}
 $$
-
+The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area. 
 
 ## Fit a Beta Regression model. 
 The Beta Regression model is useful when the response is a proportion. Since the protected areas is between 0 and 100 percent this model will assess whether there is any relationship between the predictors and the response. 
@@ -176,7 +176,7 @@ coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + tota
   family = beta_family(link = "logit"))
 
 sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
-sum_coastal_ecosystem_mod
+kable(sum_coastal_ecosystem_mod)
 ```
 
 
@@ -267,7 +267,10 @@ boot <-  map_dfr(1:1000, \(i) {
                           type = "response"),
          boot = i)
 })
+```
 
+
+```{r}
 ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
   geom_line(aes(color = ecosystem)) +
     scale_color_manual(name = "Ecosystem",
@@ -296,6 +299,8 @@ boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |>
 
 Plot the confidence intervals for the predictions differentiating for ecosystems. 
 ```{r}
+#| code-fold: true
+
 ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   geom_ribbon(data = boot_ci, 
               aes(ymin = adj_prop_protected_lwr, 
@@ -322,7 +327,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                      labels = c("Cold-water coral",
                                 "Mangroves", 
                                 "Salt marsh",
-                                "Seagrass",
+                                "Sea grass",
                                 "Warm-water coral")) +
   geom_line(aes(color = ecosystem, y = predict)) +
   labs(x= "Per Capita GDP ($USD)",
@@ -330,7 +335,9 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_minimal()
 ```
-The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. On the other hand the confidence intervals of the individual predictors show the confidence interval only based on that one variable. 
+The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. The confidence intervals for the mangrove, salt marsh, sea grass, and warm-water coral are all overlapping. This shows that the differences between the effect of 
+
+On the other hand the confidence intervals of the individual predictors show the confidence interval only based on that one variable. 
 
 The values from our summary model are utilized to create this data.
 ```{r}
@@ -397,6 +404,10 @@ CI_df |>
   kable_styling()
 
 ```
+
+## Hypothesis test 
+
+We reject the null hypothesis that per capita GDP does not have a positive effect on the proportion of protected area for coastal ecosystems. The beta value for per capita GDP is low at `beta1`. This value makes sense since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the liklihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area for coastal ecosystems is statistically significant. 
 
 
 # References 
