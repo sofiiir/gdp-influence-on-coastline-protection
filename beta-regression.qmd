@@ -1,7 +1,7 @@
 ---
 title: "clean-workflow"
 author: "Sofia Rodas"
-date: December 4, 2025
+date: December 11, 2025
 format: 
   html: 
     code-fold: show
@@ -28,7 +28,7 @@ set.seed(12)
 ```
 
 # Purpose
-This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastlines. 
+This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastlines. This hypothesis is derived from the general knowledge that protecting ecosystems takes a large amount of resources. Policy must be put in place to create these protected areas. Countries with a higher GDP per capita would have a greater amount of resources to spend on creating these zones. 
 
 
 
@@ -52,12 +52,12 @@ ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016,
                                      y = percent_protected, 
                                      color = ecosystem)) +
   geom_point() +
-  scale_color_manual(values = c("#773344", 
+  scale_color_manual(values = c("#D51977", 
                                 "forestgreen", 
                                 "#273E47", 
                                 "#9BC1BC", 
-                                "#ED6A5A"))+
-  labs(x= "GDP",
+                                "#FEA82F"))+
+  labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_classic()
@@ -156,9 +156,10 @@ $$
 $$
 \begin{align}
 H_0 &: \beta_1 = 0 \\
-H_A &: \beta_1 != 0
+H_A &: \beta_1 > 0
 \end{align}
 $$
+
 
 ## Fit a Beta Regression model. 
 The Beta Regression model is useful when the response is a proportion. Since the protected areas is between 0 and 100 percent this model will assess whether there is any relationship between the predictors and the response. 
@@ -197,10 +198,22 @@ Let's plot the predictions.
 ```{r}
 ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
   geom_line(aes(color = ecosystem))+
+  scale_color_manual(values = c("#D51977", 
+                                "forestgreen", 
+                                "#273E47", 
+                                "#9BC1BC", 
+                                "#FEA82F"))+
+  labs(x= "Per Capita GDP ($USD)",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Areas by GDP")) +
   theme_minimal()
 ```
+
 #### What does this mean?
-As GDP increases the expected proportion of protected area increases.
+
+The predictions are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Saltmarshes are the most likely to be protected followed by mangroves, warm-water coral, and seagrass. Cold-water corrals are the least likely to be protected.
+
+Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
 ### Confidence Interval
 We can use the predict function to calculate confidence intervals. Unfortunately, the Beta Regression models do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
@@ -264,7 +277,16 @@ boot <-  map_dfr(1:1000, \(i) {
 })
 
 ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
-  geom_line(aes(color = ecosystem))
+  geom_line(aes(color = ecosystem)) +
+    scale_color_manual(values = c("#D51977", 
+                                "forestgreen", 
+                                "#273E47", 
+                                "#9BC1BC", 
+                                "#FEA82F")) +
+  labs(x= "Per Capita GDP ($USD)",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Areas by GDP")) +
+  theme_minimal()
 ```
 
 
@@ -274,10 +296,21 @@ boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |>
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
 
 ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
-  geom_ribbon(data = boot_ci, aes(ymin = adj_prop_protected_lwr, 
-                                  ymax = adj_prop_protected_upr, 
-                                  fill = ecosystem)) +
-  geom_line(aes(color = ecosystem, y = predict)) 
+  geom_ribbon(data = boot_ci, 
+              aes(ymin = adj_prop_protected_lwr, 
+                         ymax = adj_prop_protected_upr, 
+                         fill = ecosystem), 
+              alpha = 0.2) +
+  geom_line(aes(color = ecosystem, y = predict)) +
+    scale_color_manual(values = c("#D51977", 
+                                "forestgreen", 
+                                "#273E47", 
+                                "#9BC1BC", 
+                                "#FEA82F")) +
+  labs(x= "Per Capita GDP ($USD)",
+       y = "Percent protected",
+       title = print("2016 Percent Protected Areas by GDP")) +
+  theme_minimal()
 ```
 The Confidence Intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation.  On the other hand the Confidence Intervals of the individual predictors show the confidence interval only based on that one variable. 
 ```{r}
@@ -340,7 +373,7 @@ Create a dataframe with the confidence interval values.
 
 CI_df <- tibble(
   Variable = c("Intercept", "GDP", "Total Area", "Mangroves", "Saltmarsh", "Seagrass", "Warm-water Coral"),
-  Betas = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
+  BetaValues = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
   LowerCI = c(beta0_CI_lwr, beta1_CI_lwr, beta2_CI_lwr, beta3_man_CI_lwr, beta3_salt_CI_lwr, beta3_seag_CI_lwr, beta3_wwc_CI_lwr),
   UpperCI =c(beta0_CI_upr, beta1_CI_upr, beta2_CI_upr, beta3_man_CI_upr, beta3_salt_CI_upr, beta3_seag_CI_upr, beta3_wwc_CI_upr)
 ) 
