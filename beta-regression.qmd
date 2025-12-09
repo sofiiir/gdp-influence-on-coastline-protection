@@ -83,7 +83,7 @@ $$
 # Simulating data
 We simulate data to make sure we understand the model before using the model on our real world data. To ensure we truly understand the model we want to simulate data that outputs similar values to those we use to calculate data. 
 
-The model has three additive predictors. All of these predictors should have their own simulated values. For numeric predictors we can use the `runif` function to create a certain number of variable values within a given set of values. For categorical data we use the `rep` function that will create a list of the categorical values repeating through them until we get a list of the length we desire. 
+We only simulate data for the per capita GDP variable as our hypothesis is that per capita GDP is positively influencing proportion protected area. Since per capita GDP is a numeric predictor we can use the `runif` function to create a certain number of variable values within a given set of values.
 ```{r}
 # assign values to our intercept and slope
 beta0 <- 0.6
@@ -232,7 +232,7 @@ The predictions are broken up by ecosystem. Across the board, all of the ecosyst
 Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
 ### Confidence Interval
-We can use the predict function to calculate confidence intervals. Unfortunately, the various  models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
+Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various  models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
 ```{r}
 #| eval: false
 
@@ -287,14 +287,15 @@ ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
   theme_minimal()
 ```
 
-
+Create a data frame from the bootstrapped values that contains the confidence intervals for each ecosystem at each per capita GDP value created for the prediction grid. 
 ```{r}
-
 boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |> 
   summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
+```
 
-
+Plot the confidence intervals for the predictions differentiating for ecosystems. 
+```{r}
 ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   geom_ribbon(data = boot_ci, 
               aes(ymin = adj_prop_protected_lwr, 
