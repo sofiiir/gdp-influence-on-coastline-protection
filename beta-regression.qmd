@@ -83,9 +83,8 @@ beta1 <- 1.9
 
 # simulate the predictor data
 # gdp <- seq(from = 433, to = 71000, by = 500)
-# total_area <- seq(from = 0, to = 68100, by = 500)
 
-# simulate numeric predictor values 
+# simulate predictor values 
 gdp <- runif(10000, 0.433, 0.71)
 
 # linkspace equation
@@ -100,14 +99,14 @@ mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 
 To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated. 
 ```{r}
-# calculate the 
+# calculate the paramerters for rbeta
 shape1 <- mu * phi
 shape2 <- phi - shape1
 
 # simulate response data based on parameters assigned above 
 proportion_protected_sim <- rbeta(10000, shape1 = shape1, shape2 = shape2)
 
-# create a dataframe with all of the variables
+# create a dataframe with the variables
 sim_df <- tibble(proportion_protected_sim, gdp )
 
 # simulate the model based on the simulated data 
@@ -119,7 +118,7 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
 summary(sim_model)
 ```
 
-Our model outputs values close to the values we originally assigned to the variables. We understand our model enough to move onto fitting the model on our own data!
+The simulated model run on the simulated data outputs values close to the values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
 
 # Data preparation
 
@@ -151,7 +150,7 @@ $$
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
 \end{align}
 $$
-### Hypothesis
+### Hypothesis Statistical notation
 
 $$
 \begin{align}
