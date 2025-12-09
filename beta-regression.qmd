@@ -176,7 +176,7 @@ coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + tota
   family = beta_family(link = "logit"))
 
 sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
-kable(sum_coastal_ecosystem_mod)
+sum_coastal_ecosystem_mod
 ```
 
 
