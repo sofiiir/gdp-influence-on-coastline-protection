@@ -84,7 +84,7 @@ ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016,
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_classic()
 ```
-Since our data is proportion data we will be using a Beta Regression model. 
+At first glance the data does not follow any general trends, but we can run a statistical model to better assess any relationship between the predictors of per capita GDP, total area, and ecosystem on the response proportion protected. Since our data is proportion data we will be using a beta regression model. 
 
 Here is our proposed model based on our understanding of the variable interactions. 
 $$
@@ -95,9 +95,9 @@ logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \t
 $$
 
 # Simulating data
-We simulate data to make sure we understand the model before using the model on our real world data. To ensure we truly understand the model we want to simulate data that outputs similar values to those we use to calculate data. 
+We simulate data to make sure we understand the model before using the model on our real world data. To ensure we truly understand the model we want to simulate data, then run the beta regression with the output being similar values to those we gave it when first creating the data parameters. 
 
-We only simulate data for the per capita GDP variable as our hypothesis is that per capita GDP is positively influencing proportion protected area. Since per capita GDP is a numeric predictor we can use the `runif` function to create a certain number of variable values within a given set of values.
+We only simulate data for the per capita GDP variable as our hypothesis is that per capita GDP is positively influencing proportion protected area. Since per capita GDP is a numeric predictor we can use the `runif` function to create variable values within a given range.
 ```{r}
 # assign values to our intercept and slope
 beta0 <- 0.6
@@ -119,9 +119,9 @@ phi <- 15 # this is shape1+shape2
 mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 ```
 
-To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated. 
+To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated with `mu` and `phi`. 
 ```{r}
-# calculate the paramerters for rbeta
+# calculate the parameters for rbeta
 shape1 <- mu * phi
 shape2 <- phi - shape1
 
@@ -131,7 +131,7 @@ proportion_protected_sim <- rbeta(10000, shape1 = shape1, shape2 = shape2)
 # create a dataframe with the variables
 sim_df <- tibble(proportion_protected_sim, gdp )
 
-# simulate the model based on the simulated data 
+# run the model based on the simulated data 
 sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
   data = sim_df,
   family = beta_family(link = "logit"))
@@ -145,17 +145,17 @@ tidy(sim_model) |>
 
 ```
 
-The simulated model run on the simulated data outputs values close to the values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
+The beta regression model that was run on the simulated data outputs values close to those values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
 
 # Data preparation
 
-The Beta Regression model only works on proportion so here we change `percent_protected` to `proportion_protected`.
+The beta regression model only works on proportion so here we change `percent_protected` to `proportion_protected`.
 ```{r}
  coastal_ecosystem <- coastal_ecosystem |> 
   mutate( proportion_protected = (percent_protected /100))
 ```
 
-The Beta Regression model uses the link function `logit`. Logit does not work on 0's and 1's. We need to adjust the data to transform any 0's and 1's to slightly above 0 and slightly below 1. Here's a function created based on the vignette's description of how to handle these values. 
+The beta regression model uses the link function `logit`. Logit does not work on 0's and 1's. We need to adjust the data to transform any 0's and 1's to slightly above 0 and slightly below 1. Here's a function created based on the vignette's description of how to handle these values. 
 ```{r}
 zeros_and_ones <- function(y){
     n_obs <- sum(!is.na(y))
@@ -163,7 +163,7 @@ zeros_and_ones <- function(y){
 }
 ```
 
-Adjust the non-numeric values to numeric and apply the `zeros_and_ones` function to our proportion data.
+Then we adjust the non-numeric values to numeric and apply the `zeros_and_ones` function to our proportion data.
 ```{r}
 coastal_ecosystem <- coastal_ecosystem |> 
   mutate(total_area = as.numeric(total_area)) |> 
@@ -191,7 +191,7 @@ $$
 The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area. 
 
 ## Fit a Beta Regression model. 
-The Beta Regression model is useful when the response is a proportion. Since the protected areas is between 0 and 100 percent this model will assess whether there is any relationship between the predictors and the response. 
+Again to reiterate, the beta regression model is useful when the response is a proportion. Since the protected areas are between the proportions of 0 and 1 this model will assess whether there is any relationship between the predictors, per capita GDP, total area, and ecosystem type, and the response, proportion protected. 
 ```{r}
 coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
   data = coastal_ecosystem,
@@ -206,14 +206,7 @@ tidy(coastal_ecosystem_model) |>
 ```
 
 
-```{r}
-#| code-fold: true
-
-mean(coastal_ecosystem$pc_gdp_2016, na.rm = TRUE)
-```
-
-
-Now that we ran the Beta Regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the potential values for per capita GDP. Here we use `seq()` to create values from our lowest value to our highest value by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique variation between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values is numeric. 
+Now that we ran the beta regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the potential values for per capita GDP. Here we use `seq()` to create values from our lowest value to our highest value by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique variation between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values is numeric. 
 
 ```{r}
 
