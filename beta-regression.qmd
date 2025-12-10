@@ -152,6 +152,8 @@ coastal_ecosystem <- coastal_ecosystem |>
 ```
 
 # Beta Regression
+
+Let's remind ourselves of the statistical notation of our investigation.
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
@@ -162,8 +164,8 @@ $$
 
 $$
 \begin{align}
-H_0 &: \beta_1 > 0 \\
-H_A &: \beta_1 !> 0
+H_0 &: \beta_1 != 0 \\
+H_A &: \beta_1 > 0
 \end{align}
 $$
 The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area. 
@@ -227,9 +229,9 @@ ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
 
 #### What does this graph show?
 
-The predictions are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Saltmarshes are the most likely to be protected followed by mangroves, warm-water coral, and seagrass. Cold-water corrals are the least likely to be protected.
+The prediction lines are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Saltmarshes are the most likely to be protected followed by mangroves, warm-water coral, and seagrass. Cold-water corrals are the least likely to be protected.
 
-Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
+Key takeaway: Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
 ### Confidence Interval
 Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various  models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
@@ -249,18 +251,20 @@ coastal_model_se <- predict(object = coastal_ecosystem_model,
 ### Prediction confidence intervals
 #### Bootstrap
 
-We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps by definition are run on our original data. Samples are selected from the original data with replacement. Since we have 446 rows of data in our data frame, we can choose to select 446 samples in the boot per bootstrap calculated. Below we are running a bootstrap 1000 times. 
+We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps are run by sampling our original data with replacement. Since we have 446 rows of data in our data frame, we can choose to select 446 samples in the boot per bootstrap calculated for consistency. Below we are running a bootstrap 1000 times. 
 
 ```{r}
 boot <-  map_dfr(1:1000, \(i) {
 
+  # sample with replacement
   boot_sample <- slice_sample(coastal_ecosystem, n=446, replace = TRUE)
   
+  # run a beta regression on every single boot sample
   boot_mod <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + total_area + ecosystem,
                       family = beta_family(link = "logit"),
                       data = boot_sample)
 
-    # add a prediction step
+    # predict the boots values (the outcomes are best fit lines)
   mutate(pred_grid,
          adj_prop_protected = predict(object = boot_mod,
                           newdata = pred_grid,
