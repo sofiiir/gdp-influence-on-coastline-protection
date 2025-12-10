@@ -379,11 +379,10 @@ CI_df |>
 
 These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable.
 
-The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area. The effect size includes zero
+The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area. 
 
-Sea grass
 
-The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function that all of the ecosystems are more likely to be protected than cold-water corals.
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function, that all of the ecosystems are more likely to be protected than cold-water corals. The confidence intervals all for the ecosystems overlap meaning that 
 
 ## Prediction Lines Confidence Intervals
 
@@ -460,7 +459,9 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   theme_minimal()
 ```
 
-The confident intervals on the predictions show the variation for the different ecosystems based on all of the predictors. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping. This shows that the differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ from each other. Cold-water coral 
+The confident intervals on the predictions show the variation for the different ecosystems based on all of the predictors. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings of the beta values confidence intervals above.. The differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ between each of the ecosystems with the exception of cold-water coral. 
+
+Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence interval. 
 
 
 
