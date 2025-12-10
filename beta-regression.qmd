@@ -294,7 +294,7 @@ ggplot(boot, aes(x = pc_gdp_2016, y = adj_prop_protected)) +
   theme_minimal()
 ```
 
-Create a data frame from the bootstrapped values that contains the confidence intervals for each ecosystem at each per capita GDP value created for the prediction grid. 
+Create a data frame calculating the confidence intervals from the bootstrapped values. 
 ```{r}
 boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |> 
   summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
