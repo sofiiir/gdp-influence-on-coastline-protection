@@ -23,7 +23,6 @@ library(tidyverse)
 library(patchwork)
 library(glmmTMB)
 library(kableExtra)
-# library(modelsummary)
 library(broom.mixed)
 
 set.seed(12)
@@ -126,10 +125,6 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
 
 # make sure the values are close to the assigned variables
 # summary(sim_model)
-
-# modelsummary(sim_model, 
-#              shape = model + statistic ~ term,
-#              output = "markdown")
 
 tidy(sim_model)
 
