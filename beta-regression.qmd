@@ -126,7 +126,9 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
 # make sure the values are close to the assigned variables
 # summary(sim_model)
 
-tidy(sim_model)
+tidy(sim_model) |> 
+  kable() |> 
+  kable_styling()
 
 ```
 
@@ -164,6 +166,7 @@ $$
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
 \end{align}
 $$
+
 ## Hypothesis Statistical notation
 
 $$
@@ -181,10 +184,12 @@ coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + tota
   data = coastal_ecosystem,
   family = beta_family(link = "logit"))
 
-# sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
+sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
 # sum_coastal_ecosystem_mod
 
-tidy(coastal_ecosystem_model)
+tidy(coastal_ecosystem_model) |> 
+  kable() |> 
+  kable_styling()
 ```
 
 
