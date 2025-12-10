@@ -88,9 +88,9 @@ ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016,
   theme_classic()
 ```
 
-At first glance the data does not follow any general trends, but we can run a statistical model to better assess any relationship between the predictors of per capita GDP, total area, and ecosystem on the response proportion protected. Since our data is proportion data we will be using a beta regression model.
+At first glance the data does not follow any general trends, but we can run a statistical model to better assess any relationship between the predictors of per capita GDP, total area, and ecosystem on the response proportion protected. Since our data shows change in proportion we will be using a beta regression model.
 
-Here is our proposed model based on our understanding of the variable interactions.
+Here is our proposed model based on our understanding of the variable interactions. The ecosystems are individual predictors in this model since they are dummy variables. Cold-water corals are the reference level since `R` defines the reference alphabetically. Therefore, there is no dummy variable for cold-water coral.
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
@@ -148,12 +148,15 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
 # summary(sim_model)
 
 tidy(sim_model) |> 
+  mutate(p.value = ifelse(p.value < 0.001,
+                     "p < 0.001",
+                     as.character(p.value))) |> 
   kable() |> 
   kable_styling()
 
 ```
 
-The beta regression model that was run on the simulated data outputs values close to those values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
+Running a beta regression model on the simulated data outputs values that are close to those values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
 
 # Data preparation
 
@@ -183,7 +186,9 @@ coastal_ecosystem <- coastal_ecosystem |>
 
 # Beta Regression
 
-Let's remind ourselves of the statistical notation of our investigation. $$
+Let's remind ourselves of the statistical notation of our investigation. 
+
+$$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
@@ -197,7 +202,9 @@ $$
 H_0 &: \beta_1 = 0 \\
 H_A &: \beta_1 > 0
 \end{align}
-$$ The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area.
+$$ 
+
+The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area.
 
 ## Fit a beta regression model
 
@@ -218,8 +225,7 @@ We can use `broom.mixed::tidy()` to make an aesthetic summary table of our model
 ```{r}
 # create a tidy version of this dataframe
 tidy(coastal_ecosystem_model) |>
-   mutate(
-    p.value = ifelse(p.value < 0.001,
+   mutate(p.value = ifelse(p.value < 0.001,
                      "p < 0.001",
                      as.character(p.value))) |> 
   kable() |>
@@ -298,6 +304,86 @@ coastal_model_se <- predict(object = coastal_ecosystem_model,
                           component = "cond") # get the SE of the fit
 
 ```
+## Beta's individual Confidence Intervals
+
+The values from our summary model are utilized to create the confidence intervals for the individual beta values.
+
+First, we'll access the individual beta values from the summary table as well as the standard error values from the summary table.
+
+```{r}
+#| code-fold: true
+
+beta0 <- sum_coastal_ecosystem_mod$coefficients$cond[1]
+beta1 <- sum_coastal_ecosystem_mod$coefficients$cond[2]
+beta2 <- sum_coastal_ecosystem_mod$coefficients$cond[3]
+beta3_mangroves <- sum_coastal_ecosystem_mod$coefficients$cond[4]
+beta3_saltmarsh <- sum_coastal_ecosystem_mod$coefficients$cond[5]
+beta3_seagrass <- sum_coastal_ecosystem_mod$coefficients$cond[6]
+beta3_warmwater_coral <- sum_coastal_ecosystem_mod$coefficients$cond[7]
+
+se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
+```
+
+Confidence intervals are then calculated subtracting and adding one standard error from each beta value.
+
+```{r}
+#| code-fold: true
+
+# Beta 0 confidence intervals
+beta0_CI_lwr <- beta0 - (1.96* se[1])
+beta0_CI_upr <- beta0 + (1.96* se[1])
+
+# Beta 1 confidence intervals
+beta1_CI_lwr <- beta1 - (1.96* se[2])
+beta1_CI_upr <- beta1 + (1.96* se[2])
+
+# Beta 2 confidence intervals
+beta2_CI_lwr <- beta2 - (1.96* se[3])
+beta2_CI_upr <- beta2 + (1.96* se[3])
+
+# Beta 3 mangrove confidence intervals
+beta3_man_CI_lwr <- beta3_mangroves - (1.96* se[4])
+beta3_man_CI_upr <- beta3_mangroves + (1.96* se[4])
+
+# Beta 3 saltmarsh confidence intervals
+beta3_salt_CI_lwr <- beta3_saltmarsh - (1.96* se[5])
+beta3_salt_CI_upr <- beta3_saltmarsh + (1.96* se[5])
+
+# Beta 3 seagrass confidence intervals
+beta3_seag_CI_lwr <- beta3_seagrass - (1.96* se[6])
+beta3_seag_CI_upr <- beta3_seagrass + (1.96* se[6])
+
+# Beta 3 confidence intervals
+beta3_wwc_CI_lwr <- beta3_warmwater_coral - (1.96* se[7])
+beta3_wwc_CI_upr <- beta3_warmwater_coral + (1.96* se[7])
+
+```
+
+Finally, let's create a dataframe with the beta's confidence interval values.
+
+```{r}
+#| code-fold: true
+
+CI_df <- tibble(
+  Variable = c("Intercept", "GDP", "Total Area", "Mangroves", "Saltmarsh", "Seagrass", "Warm-water Coral"),
+  BetaValues = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
+  LowerCI = c(beta0_CI_lwr, beta1_CI_lwr, beta2_CI_lwr, beta3_man_CI_lwr, beta3_salt_CI_lwr, beta3_seag_CI_lwr, beta3_wwc_CI_lwr),
+  UpperCI =c(beta0_CI_upr, beta1_CI_upr, beta2_CI_upr, beta3_man_CI_upr, beta3_salt_CI_upr, beta3_seag_CI_upr, beta3_wwc_CI_upr)
+) 
+
+CI_df |> 
+  kable() |> 
+  kable_styling()
+
+```
+
+These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable.
+
+The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area. The effect size includes zero
+
+Sea grass
+
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function that all of the ecosystems are more likely to be protected than cold-water corals.
 
 ## Prediction Lines Confidence Intervals
 
@@ -345,18 +431,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                          ymax = adj_prop_protected_upr, 
                          fill = ecosystem), 
               alpha = 0.2) +
-  scale_color_manual(name = "Ecosystem",
-                     values = c(coldwater_coral = "#D51977", 
-                                mangroves = "forestgreen", 
-                                saltmarshes = "#273E47", 
-                                seagrasses = "#9BC1BC", 
-                                warm_coral = "#FEA82F"),
-                     labels = c("Cold-water coral",
-                                "Mangroves", 
-                                "Salt marsh",
-                                "Seagrass",
-                                "Warm-water coral")) +
-  scale_fill_manual(name = "Ecosystem",
+    scale_fill_manual(name = "Ecosystem",
                      values = c(coldwater_coral = "#D51977", 
                                mangroves = "forestgreen", 
                                 saltmarshes = "#273E47", 
@@ -368,96 +443,27 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                                 "Sea grass",
                                 "Warm-water coral")) +
   geom_line(aes(color = ecosystem, y = predict)) +
+  scale_color_manual(name = "Ecosystem",
+                     values = c(coldwater_coral = "#D51977", 
+                                mangroves = "forestgreen", 
+                                saltmarshes = "#273E47", 
+                                seagrasses = "#9BC1BC", 
+                                warm_coral = "#FEA82F"),
+                     labels = c("Cold-water coral",
+                                "Mangroves", 
+                                "Salt marsh",
+                                "Seagrass",
+                                "Warm-water coral")) +
   labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_minimal()
 ```
 
-Once per capita
+The confident intervals on the predictions show the variation for the different ecosystems based on all of the predictors. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping. This shows that the differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ from each other. Cold-water coral 
 
-The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping. This shows that the differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ from each other.
 
-## Individual Beta's Confidence Intervals
 
-The values from our summary model are utilized to create the confidence intervals for the individual beta values.
-
-First, we'll access the individual beta values from the summary table as well as the standard error values from the summary table.
-
-```{r}
-#| code-fold: true
-
-beta0 <- sum_coastal_ecosystem_mod$coefficients$cond[1]
-beta1 <- sum_coastal_ecosystem_mod$coefficients$cond[2]
-beta2 <- sum_coastal_ecosystem_mod$coefficients$cond[3]
-beta3_mangroves <- sum_coastal_ecosystem_mod$coefficients$cond[4]
-beta3_saltmarsh <- sum_coastal_ecosystem_mod$coefficients$cond[5]
-beta3_seagrass <- sum_coastal_ecosystem_mod$coefficients$cond[6]
-beta3_warmwater_coral <- sum_coastal_ecosystem_mod$coefficients$cond[7]
-
-se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
-```
-
-Confidence intervals are then calculated subtracting and adding one standard error from each beta value.
-
-```{r}
-#| code-fold: true
-
-# Beta 0 confidence intervals
-beta0_CI_lwr <- beta0 - se[1]
-beta0_CI_upr <- beta0 + se[1]
-
-# Beta 1 confidence intervals
-beta1_CI_lwr <- beta1 - se[2]
-beta1_CI_upr <- beta1 + se[2]
-
-# Beta 2 confidence intervals
-beta2_CI_lwr <- beta2 - se[3]
-beta2_CI_upr <- beta2 + se[3]
-
-# Beta 3 mangrove confidence intervals
-beta3_man_CI_lwr <- beta3_mangroves - se[4]
-beta3_man_CI_upr <- beta3_mangroves + se[4]
-
-# Beta 3 saltmarsh confidence intervals
-beta3_salt_CI_lwr <- beta3_saltmarsh - se[5]
-beta3_salt_CI_upr <- beta3_saltmarsh + se[5]
-
-# Beta 3 seagrass confidence intervals
-beta3_seag_CI_lwr <- beta3_seagrass - se[6]
-beta3_seag_CI_upr <- beta3_seagrass + se[6]
-
-# Beta 3 confidence intervals
-beta3_wwc_CI_lwr <- beta3_warmwater_coral - se[7]
-beta3_wwc_CI_upr <- beta3_warmwater_coral + se[7]
-
-```
-
-Finally, let's create a dataframe with the beta's confidence interval values.
-
-```{r}
-#| code-fold: true
-
-CI_df <- tibble(
-  Variable = c("Intercept", "GDP", "Total Area", "Mangroves", "Saltmarsh", "Seagrass", "Warm-water Coral"),
-  BetaValues = c(beta0, beta1, beta2, beta3_mangroves, beta3_saltmarsh, beta3_seagrass, beta3_warmwater_coral),
-  LowerCI = c(beta0_CI_lwr, beta1_CI_lwr, beta2_CI_lwr, beta3_man_CI_lwr, beta3_salt_CI_lwr, beta3_seag_CI_lwr, beta3_wwc_CI_lwr),
-  UpperCI =c(beta0_CI_upr, beta1_CI_upr, beta2_CI_upr, beta3_man_CI_upr, beta3_salt_CI_upr, beta3_seag_CI_upr, beta3_wwc_CI_upr)
-) 
-
-CI_df |> 
-  kable() |> 
-  kable_styling()
-
-```
-
-These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable.
-
-The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area. The effect size includes zero
-
-Sea grass
-
-The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function that all of the ecosystems are more likely to be protected than cold-water corals.
 
 # References
 
