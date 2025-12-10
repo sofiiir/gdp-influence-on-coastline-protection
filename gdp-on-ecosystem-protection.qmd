@@ -39,7 +39,6 @@ Data cleaning was performed in a separate file with the final product being a cl
 First we'll load in the appropriate libraries.
 ```{r}
 #| output: false
-#| code-fold: true
 
 # load in appropriate libraries
 library(DescTools)
@@ -199,14 +198,21 @@ coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + tota
 
 sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
 # sum_coastal_ecosystem_mod
+beta0 <- sum_coastal_ecosystem_mod$coefficients$cond[1]
 
 tidy(coastal_ecosystem_model) |> 
   kable() |> 
   kable_styling()
 ```
+## Hypothesis test 
 
+We reject the null hypothesis that per capita GDP does not have a positive effect on the proportion of protected area for coastal ecosystems. The beta value for per capita GDP is low but positive at `r sum_coastal_ecosystem_mod$coefficients$cond[2]`. This value makes sense since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the liklihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area for coastal ecosystems is statistically significant. 
 
-Now that we ran the beta regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the potential values for per capita GDP. Here we use `seq()` to create values from our lowest value to our highest value by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique variation between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values is numeric. 
+### Predicions 
+
+Now that we ran the beta regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the expected values for per capita GDP. 
+
+Here we use `seq()` to create values in the range of our real world data by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique variation between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values are numeric. 
 
 ```{r}
 
@@ -215,7 +221,7 @@ pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500),
   mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE))
 ```
 
-Here we run the model to predict expected protected proportion based on the different combinations of possible per capita GDP and ecosystems holding total area constant. 
+Let's run create prediction values for most probable protected proportion based on the different combinations of possible per capita GDP and ecosystems holding total area constant. This uses the `glmmTMB` model we already specified above to calculate what the protected proportion values are 
 
 WHY CAN WE STAY IN "RESPONSE" SPACE?
 ```{r}
@@ -250,12 +256,12 @@ ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
 
 #### What does this graph show?
 
-The prediction lines are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Saltmarshes are the most likely to be protected followed by mangroves, warm-water coral, and seagrass. Cold-water corrals are the least likely to be protected.
+The prediction lines are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Salt marshes are the most likely to be protected followed by mangroves, warm-water coral, and sea grasses. Cold-water corrals are the least likely to be protected.
 
 Key takeaway: Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
-### Confidence Interval
-Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various  models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below.
+# Confidence Interval
+Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various  models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by bootstrapping and by hand below.
 ```{r}
 #| eval: false
 
@@ -267,14 +273,14 @@ coastal_model_se <- predict(object = coastal_ecosystem_model,
 
 ```
 
+## Prediction Lines Confidence Intervals
 
-# Confidence Intervals
-### Prediction confidence intervals
-#### Bootstrap
+### Bootstrap Data 
 
 We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps are run by sampling our original data with replacement. Since we have 446 rows of data in our data frame, we can choose to select 446 samples in the boot per bootstrap calculated for consistency. Below we are running a bootstrap 1000 times. 
 
 ```{r}
+# reiterate through the boot 1000 times
 boot <-  map_dfr(1:1000, \(i) {
 
   # sample with replacement
@@ -294,14 +300,14 @@ boot <-  map_dfr(1:1000, \(i) {
 })
 ```
 
-Create a data frame calculating the confidence intervals from the bootstrapped values. 
+Then we create a data frame calculating the confidence intervals from the bootstrapped values. 
 ```{r}
 boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |> 
   summarise(adj_prop_protected_lwr = quantile(adj_prop_protected, 0.025),
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
 ```
 
-Plot the confidence intervals for the predictions differentiating for ecosystems. 
+Let's plot the confidence intervals for the predictions differentiating for ecosystems. 
 ```{r}
 #| code-fold: true
 
@@ -339,11 +345,14 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
        title = print("2016 Percent Protected Areas by GDP")) +
   theme_minimal()
 ```
-The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. The confidence intervals for the mangrove, salt marsh, sea grass, and warm-water coral are all overlapping. This shows that the differences between the effect of 
+The confidence intervals on the predictions are showing the confidence intervals when all of the variables influences are accounted for in the computation. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping. This shows that the differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ from each other.
 
-On the other hand the confidence intervals of the individual predictors show the confidence interval only based on that one variable. 
 
-The values from our summary model are utilized to create this data.
+## Individual Beta's Confidence Intervals
+
+The values from our summary model are utilized to create the confidence intervals for the individual beta values.
+
+First, we'll access the individual beta values from the summary table as well as the standard error values from the summary table. 
 ```{r}
 #| code-fold: true
 
@@ -357,6 +366,7 @@ beta3_warmwater_coral <- sum_coastal_ecosystem_mod$coefficients$cond[7]
 
 se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
 ```
+
 
 Confidence intervals are then calculated subtracting and adding one standard error from each beta value.
 ```{r}
@@ -392,7 +402,7 @@ beta3_wwc_CI_upr <- beta3_warmwater_coral + se[7]
 
 ```
 
-Create a dataframe with the confidence interval values.
+Finally, let's create a dataframe with the beta's confidence interval values.
 ```{r}
 #| code-fold: true
 
@@ -409,9 +419,11 @@ CI_df |>
 
 ```
 
-## Hypothesis test 
+These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable. 
 
-We reject the null hypothesis that per capita GDP does not have a positive effect on the proportion of protected area for coastal ecosystems. The beta value for per capita GDP is low at `beta1`. This value makes sense since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the liklihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area for coastal ecosystems is statistically significant. 
+The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area. 
+
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function that all of the ecosystems are more likely to be protected than cold-water corals.
 
 
 # References 
