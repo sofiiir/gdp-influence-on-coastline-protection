@@ -23,6 +23,8 @@ library(tidyverse)
 library(patchwork)
 library(glmmTMB)
 library(kableExtra)
+# library(modelsummary)
+library(broom.mixed)
 
 set.seed(12)
 ```
@@ -123,7 +125,14 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
   family = beta_family(link = "logit"))
 
 # make sure the values are close to the assigned variables
-summary(sim_model)
+# summary(sim_model)
+
+# modelsummary(sim_model, 
+#              shape = model + statistic ~ term,
+#              output = "markdown")
+
+tidy(sim_model)
+
 ```
 
 The simulated model run on the simulated data outputs values close to the values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
@@ -177,8 +186,10 @@ coastal_ecosystem_model <- glmmTMB(adj_proportion_protected ~ pc_gdp_2016 + tota
   data = coastal_ecosystem,
   family = beta_family(link = "logit"))
 
-sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
-sum_coastal_ecosystem_mod
+# sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
+# sum_coastal_ecosystem_mod
+
+tidy(coastal_ecosystem_model)
 ```
 
 
