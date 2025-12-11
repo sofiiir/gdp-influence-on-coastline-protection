@@ -300,18 +300,7 @@ Key takeaway: Overall, as GDP increases the expected proportion of protected are
 
 Confidence intervals show where we expect 95% of the time we will find the range for the  parameter in question. For beta regression when analyzing the confidence interval for betas we expect the beta's value to fall within the confidence interval 95% of the time. When analyzing the prediction's confidence interval, it shows that the `mu` is expected to fall within the confidence interval 95% of the time. 
 
-Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by bootstrapping and by hand below.
-
-```{r}
-#| eval: false
-
-coastal_model_se <- predict(object = coastal_ecosystem_model,
-                          newdata = pred_grid,
-                          type = "link", # stay in link space
-                          se.fit = TRUE,
-                          component = "cond") # get the SE of the fit
-
-```
+Typically, we can use the `predict()` function to calculate confidence intervals. Unfortunately, the various models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below and by bootstrapping.
 
 ## Beta's individual Confidence Intervals
 
