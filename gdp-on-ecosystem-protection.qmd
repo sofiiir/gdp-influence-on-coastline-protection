@@ -21,6 +21,8 @@ The type of ecosystem and the total area of a specific type of coastal ecosystem
 
 Total area is another confounding variable for proportion protected area as the more area a nation has of a specific ecosystem the less area they need to protect to achieve a higher percentage of proportion protected area. One example in which I would expect this to largely influence proportion protected area is in small island nations where they have a large area of coastal ecosystems. Even if they protect a greater area than another nation their proportion of protected area may be low.
 
+Total area also influences per capita GDP as locations with more coast are more likely to have higher per capita GDP. 
+
 ![DAG: Total area of an ecosystem, ecosystem type, and GDP per capita of a country all influence proportion of protected coastline.](data/DAG.png)
 
 # Data
@@ -434,29 +436,12 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                          ymax = adj_prop_protected_upr, 
                          fill = ecosystem), 
               alpha = 0.2) +
-    scale_fill_manual(name = "Ecosystem",
-                     values = c(coldwater_coral = "#D51977", 
+    scale_color_manual(values = c(coldwater_coral = "#D51977", 
                                mangroves = "forestgreen", 
                                 saltmarshes = "#273E47", 
                                seagrasses = "#9BC1BC", 
-                                warm_coral = "#FEA82F"),
-                     labels = c("Cold-water coral",
-                                "Mangroves", 
-                                "Salt marsh",
-                                "Sea grass",
-                                "Warm-water coral")) +
+                                warm_coral = "#FEA82F")) +
   geom_line(aes(color = ecosystem, y = predict)) +
-  scale_color_manual(name = "Ecosystem",
-                     values = c(coldwater_coral = "#D51977", 
-                                mangroves = "forestgreen", 
-                                saltmarshes = "#273E47", 
-                                seagrasses = "#9BC1BC", 
-                                warm_coral = "#FEA82F"),
-                     labels = c("Cold-water coral",
-                                "Mangroves", 
-                                "Salt marsh",
-                                "Seagrass",
-                                "Warm-water coral")) +
   labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
        title = print("2016 Percent Protected Areas by GDP")) +
