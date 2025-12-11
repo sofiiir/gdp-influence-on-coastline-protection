@@ -295,7 +295,7 @@ ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
 
 #### What does this graph show?
 
-The prediction lines are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Salt marshes are the most likely to be protected followed by mangroves, warm-water coral, and sea grasses. Cold-water corrals are the least likely to be protected.
+The prediction lines are broken up by ecosystem. Across the board, all of the ecosystems are more likely to be protected the higher the per capita GDP is in a country. Salt marshes are the most likely to be protected followed by mangroves, warm-water coral, and sea grasses. Cold-water corrals are the least likely to be protected. We'll look at the confidence intervals below to analyze if these differences in proportion protected area are significant between the ecosystem types. 
 
 Key takeaway: Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
