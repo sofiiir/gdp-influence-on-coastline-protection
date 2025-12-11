@@ -299,7 +299,7 @@ The prediction lines are broken up by ecosystem. Across the board, all of the ec
 
 Key takeaway: Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
-# Confidence Interval
+# Confidence Intervals
 
 Confidence intervals show where we expect 95% of the time we will find the range for the  parameter in question. For beta regression when analyzing the confidence interval for betas we expect the beta's value to fall within the confidence interval 95% of the time. When analyzing the prediction's confidence interval, it shows that the `mu` is expected to fall within the confidence interval 95% of the time. 
 
@@ -467,8 +467,16 @@ Cold-water coral is less likely to be protected than the other ecosystems. At ap
 
 that the 95% of the values of proportion protected area for cold-water coral is .
 
+# Conclusion 
+
+Per capita GDP has a positive effect on proportion protected area regardless of the ecosystem type. Cold-water coral is less likely to be protected than mangroves, salt marshes, sea grass, and warm-water coral. The difference in expected proportion protected area between the ecosystems is reduced at approximately $50,000 USD. 
+
 # References
 
-IMF. 2023. World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF. https://doi.org/10.5089/9798400235801.081
+Brooks, M., Kristensen K., Maechler M., Magnusson A., McGillycuddy M., Skaug H., Nielsen A., Berg C., van Bentham K., Sadat N., Lüdecke D., Lenth R., O'Brien J., Geyer C.J., Jagan M., Wiernik B., Stouffer D.B., Agronah M., Akdur H.T.K., Bové D.S., and Krieger N. Package ‘glmmTMB’ (CRAN). (Oct. 9, 2025). Available at: [https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf)
 
-UNEP-WCMC (2025). Ocean+ Habitats \[On-line\], \[Downloaded: October 2025\]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
+Czapanskiy, M. and Grimes N. EDS 222: Statistics for Environmental Data Science. Available at: [https://eds-222-stats-f25.github.io/](https://eds-222-stats-f25.github.io/)
+
+IMF. (2023). World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF. Available at: https://doi.org/10.5089/9798400235801.081
+
+UNEP-WCMC. (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
