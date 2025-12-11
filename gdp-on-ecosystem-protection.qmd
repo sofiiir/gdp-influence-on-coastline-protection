@@ -13,7 +13,7 @@ execute:
   error: false
 ---
 
-# Purpose
+# Introduction
 
 This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastal ecosystems. This hypothesis is derived from the general knowledge that protecting ecosystems takes a large amount of resources. Policy must be put in place to create these protected areas. Countries with a higher per capita GDP would, in theory, have a greater amount of resources to spend on creating these zones.
 
@@ -21,9 +21,11 @@ The type of ecosystem and the total area per ecosystem are also included as pred
 
 In the DAG, total area of an ecosystem acts as a fork. Total area of an ecosystem is therefore a confounding variable. For proportion protected area, the more area a nation has of a specific ecosystem the more area they would need to protect to achieve a higher proportion protected area. One example in which I would expect this to largely influence proportion protected area is in small island nations where they may have a large area of a coastal ecosystems. Even if they protect a greater unadjusted area than another nation their proportion of protected area may be low.
 
-Total area also influences per capita GDP as locations with more coast are more likely to have higher per capita GDP. This higher per capita GDP would likely be due to an increase in resources and/or an increase in eco-tourism.
+Total area per ecosystem also influences per capita GDP as locations with more coast are more likely to have higher per capita GDP. This higher per capita GDP would likely be due to an increase in resources and/or an increase in eco-tourism.
 
-![DAG: Total area of an ecosystem, ecosystem type, and GDP per capita of a country all influence proportion of protected coastline.](data/DAG.png)
+Total coastal area of a country would also be a confounding variable that effects both per capita GDP and proportion protected per ecosystem. Coastal areas other than the five ecosystems, cold-water coral, mangroves, salt marsh, sea grass, and warm-water coral are not accounted for in the data. Coastal areas such as beaches and ports would likely increase per capita GDP again through a potential increase in eco-tourism and/or global trade. These other coastline types could potentially influence protection statuses. For example, if a port is near a mangrove the mangrove would be less likely to gain a protected status. Alternatively, if a wealthy homes are near sea grass the sea grass may be more likely to be protected to maintain its sea surge abilities. Unfortunately, total coastal area of a country was not located for this analysis and is not included in the model. 
+
+![DAG: Total area of an ecosystem, ecosystem type, and per capita GDP (USD$), and total coastal area of a country all influence proportion of protected area per ecosystem.](data/DAG.png)
 
 # Data
 
@@ -87,7 +89,7 @@ ggplot(data = coastal_ecosystem, aes(x = pc_gdp_2016,
   theme_classic()
 ```
 
-At first glance the data does not follow any general trends, but we can run a statistical model to better assess any relationship between the predictors of per capita GDP, total area, and ecosystem on the response proportion protected. Since our data shows change in proportion we will be using a beta regression model.
+At first glance the data does not follow any general trends, but we can run a statistical model to better assess any relationship between the predictors of per capita GDP, total area per ecosystem, and ecosystem on the response proportion protected area for each ecosystem. Since our data shows change in proportion we will be using a beta regression model.
 
 Here is our proposed model based on our understanding of the variable interactions. The ecosystems are individual predictors in this model since they are dummy variables. Cold-water corals are the reference level since `R` defines the reference alphabetically. Therefore, there is no dummy variable for cold-water coral. 
 $$
@@ -108,13 +110,10 @@ We only simulate data for the per capita GDP variable as our hypothesis is that 
 beta0 <- 0.6
 beta1 <- 1.9
 
-# simulate the predictor data
-# gdp <- seq(from = 433, to = 71000, by = 500)
-
 # simulate predictor values 
 gdp <- runif(10000, 0.433, 0.71)
 
-# linkspace equation
+# link-space equation
 logit_mu <- beta0 + beta1 * gdp
 
 # assign value to phi 
@@ -207,7 +206,7 @@ The hypothesis as described in full detail in the introduction is that per capit
 
 ## Fit a beta regression model
 
-Again to reiterate, the beta regression model is useful when the response is a proportion. Since the protected areas are between the proportions of 0 and 1 this model will assess whether there is any relationship between the predictors, per capita GDP, total area, and ecosystem type, and the response, proportion protected.
+Again to reiterate, the beta regression model is useful when the response is a proportion. Since the protected areas are between the proportions of 0 and 1 this model will assess whether there is any relationship between the predictors, per capita GDP, total area per ecosystem, and ecosystem type, and the response, proportion protected area per ecosystem.
 
 ```{r}
 # run the beta regression model on our data
@@ -242,7 +241,7 @@ Total area per ecosystem is not statistically significant. It is not statistical
 
 All of the ecosystem's proportion protected values are statistically significant when comparing proportion protected to the cold-water coral reference values. Mangroves, salt marshes, sea grasses, and warm-water coral are all more likely to be protected than cold-water corals.
 
-### Predicions
+### Predictions
 
 Now that we ran the beta regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the expected values for per capita GDP.
 
@@ -255,9 +254,7 @@ pred_grid <- expand_grid(pc_gdp_2016 = seq(from = 433, to = 71000, by = 500),
   mutate(total_area = mean(coastal_ecosystem$total_area, na.rm = TRUE))
 ```
 
-Let's create prediction values for expected protected proportion based on the different combinations of possible per capita GDP and ecosystems holding total area constant. This uses the `glmmTMB` model we already specified above to calculate what the protected proportion values are based on the prediction grid.
-
-WHY CAN WE STAY IN "RESPONSE" SPACE?
+Let's create prediction values for expected protected proportion area per ecosystem based on the different combinations of possible per capita GDP and ecosystems holding total area per ecosystem constant. This uses the `glmmTMB` model we already specified above to calculate what the protected proportion values are based on the prediction grid.
 
 ```{r}
 coastal_model_pred <- pred_grid |> 
@@ -429,11 +426,28 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
                          ymax = adj_prop_protected_upr, 
                          fill = ecosystem), 
               alpha = 0.2) +
-    scale_color_manual(values = c(coldwater_coral = "#D51977", 
+    scale_color_manual(name = "Ecosystem",
+                     values = c(coldwater_coral = "#D51977", 
+                                mangroves = "forestgreen", 
+                                saltmarshes = "#273E47", 
+                                seagrasses = "#9BC1BC", 
+                                warm_coral = "#FEA82F"),
+                     labels = c("Cold-water coral",
+                                "Mangroves", 
+                                "Salt marsh",
+                                "Seagrass",
+                                "Warm-water coral")) +
+  scale_fill_manual(name = "Ecosystem",
+                     values = c(coldwater_coral = "#D51977", 
                                mangroves = "forestgreen", 
                                 saltmarshes = "#273E47", 
                                seagrasses = "#9BC1BC", 
-                                warm_coral = "#FEA82F")) +
+                                warm_coral = "#FEA82F"),
+                     labels = c("Cold-water coral",
+                                "Mangroves", 
+                                "Salt marsh",
+                                "Seagrass",
+                                "Warm-water coral")) +
   geom_line(aes(color = ecosystem, y = predict)) +
   labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
@@ -443,7 +457,9 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
 
 The confidence intervals on the predictions show the variation for the different ecosystems based on all of the predictors confounding effects. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings that the beta values confidence intervals are also overlapping as stated above. The differences between the effect of per capita GDP on the protection of ecosystems do not greatly differ between the ecosystems with the exception of cold-water coral.
 
-Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence interval meaning that cold-water coral is still more likely to be protected as GDP increases.
+Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence intervals. The overlap in confidence intervals means that the difference between the expected `mu` values for warm-water corals, seagrass, and cold-water coral are not significantly different. 
+
+that the 95% of the values of proportion protected area for cold-water coral is .
 
 # References
 
