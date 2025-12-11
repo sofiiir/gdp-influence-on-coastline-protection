@@ -149,6 +149,7 @@ tidy(sim_model) |>
   mutate(p.value = ifelse(p.value < 0.001,
                      "p < 0.001",
                      as.character(p.value))) |> 
+  select(term, estimate, std.error, statistic, p.value) |>
   kable() |> 
   kable_styling()
 
@@ -221,11 +222,12 @@ sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
 We can use `broom.mixed::tidy()` to make an aesthetic summary table of our model. When originally running the `tidy()` function some of the p-values were zero since the table does not round. We use an `ifelse()` statement to replace anywhere with a p-value less than 0.001 to simply state "p \< 0.001." P-values that are less than 0.001 show statistical significance since there is an extremely low probability of getting those values by chance alone.
 
 ```{r}
-# create a tidy version of this dataframe
+# create a tidy version of the summary table
 tidy(coastal_ecosystem_model) |>
    mutate(p.value = ifelse(p.value < 0.001,
                      "p < 0.001",
                      as.character(p.value))) |> 
+  select(term, estimate, std.error, statistic, p.value) |> 
   kable() |>
   kable_styling()
 ```
@@ -295,6 +297,8 @@ The prediction lines are broken up by ecosystem. Across the board, all of the ec
 Key takeaway: Overall, as GDP increases the expected proportion of protected areas increases, regardless of the ecosystem type.
 
 # Confidence Interval
+
+Confidence intervals show where we expect 95% of the time we will find the range for the  parameter in question. For beta regression when analyzing the confidence interval for betas we expect the beta's value to fall within the confidence interval 95% of the time. When analyzing the prediction's confidence interval, it shows that the `mu` is expected to fall within the confidence interval 95% of the time. 
 
 Typically, we can use the predict function to calculate confidence intervals. Unfortunately, the various models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by bootstrapping and by hand below.
 
@@ -384,9 +388,11 @@ CI_df |>
 
 These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable.
 
-The total area confidence interval includes zero in its range. This signifies that total area does not have an effect on proportion protected area.
+The per capita GDP confidence interval range is positive showing that proportion protected area is positively correlated with per capita GDP. 
 
-The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by bootstrapping and applying the `predict ()` function, that all of the ecosystems are more likely to be protected than cold-water corals. The confidence intervals all for the ecosystems overlap meaning that
+The total area per ecosystem confidence interval includes zero in its range. This signifies that total area per ecosystem does not have an effect on proportion protected area. This confidence interval finding also supports and is supported by the p-value for total area per ecosystem being greater than 0.05 and not statistically significant as denoted in the beta regression summary table. 
+
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by applying the `predict ()` function, that all of the ecosystems are more likely to be protected than cold-water corals. The confidence intervals for all the ecosystems overlap meaning that the 95 percent confidence intervals 
 
 ## Prediction Lines Confidence Intervals
 
@@ -446,9 +452,9 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   theme_minimal()
 ```
 
-The confident intervals on the predictions show the variation for the different ecosystems based on all of the predictors. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings of the beta values confidence intervals above.. The differences between the effect of per capita GDP on the protection of these ecosystems do not greatly differ between each of the ecosystems with the exception of cold-water coral.
+The confidence intervals on the predictions show the variation for the different ecosystems based on all of the predictors confounding effects. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings that the beta values confidence intervals are also overlapping as stated above. The differences between the effect of per capita GDP on the protection of ecosystems do not greatly differ between the ecosystems with the exception of cold-water coral.
 
-Cold-water coral is less likely to be protected than the other ecosystems. At approximately \$50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence interval.
+Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence interval meaning that cold-water coral is still more likely to be protected as GDP increases.
 
 # References
 
