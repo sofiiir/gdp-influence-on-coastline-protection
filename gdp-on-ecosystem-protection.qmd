@@ -375,13 +375,13 @@ CI_df |>
 
 ```
 
-These confidence intervals are values for the individual predictors and show the confidence interval only based on that one variable.
+These confidence intervals are ranges specific to the individual predictors and show the confidence interval only based on that one variable.
 
 The per capita GDP confidence interval range is positive showing that proportion protected area is positively correlated with per capita GDP. 
 
-The total area per ecosystem confidence interval includes zero in its range. This signifies that total area per ecosystem does not have an effect on proportion protected area. This confidence interval finding also supports and is supported by the p-value for total area per ecosystem being greater than 0.05 and not statistically significant as denoted in the beta regression summary table. 
+The total area per ecosystem confidence interval includes zero in its range. This signifies that total area per ecosystem does not have an effect on proportion protected area. This confidence interval analysis also supports and is supported by the p-value for total area per ecosystem being greater than 0.05 and not statistically significant as denoted in the beta regression summary table. 
 
-The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by applying the `predict ()` function, that all of the ecosystems are more likely to be protected than cold-water corals. The confidence intervals for all the ecosystems overlap meaning that the 95 percent confidence intervals 
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence intervals are the constructed for mangroves, salt marshes, sea grasses, and warm-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by applying the `predict ()` function, that all of the other ecosystems are more likely to be protected than cold-water corals. The confidence intervals for mangroves, salt marshes, sea grasses, and warm-water coral overlap. This signifies the differences between mangroves, salt marshes, sea grasses, and warm-water coral are likely not significant but additional analysis would be necessary to confirm this statement.  
 
 ## Prediction Lines Confidence Intervals
 
