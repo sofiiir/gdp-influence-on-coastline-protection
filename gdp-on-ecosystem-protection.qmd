@@ -1,5 +1,6 @@
 ---
-title: "Per Capita GDP influence on Protection of Coastal Ecosystems"
+title: "Per Capita GDP Influence on the Protection of Coastal Ecosystems"
+description: "Nation's per capita GDP influence on coastal ecosystem protections, an exploration of the proportion protected of cold-water corals, mangroves, salt marshes, sea grass, and warm-water corals."
 author: "Sofia Rodas"
 date: December 11, 2025
 format: 
@@ -31,9 +32,9 @@ Total coastal area of a country would also be a confounding variable that effect
 
 ## Data Access
 
-The original data comes from the [Ocean+Habitats](https://habitats.oceanplus.org/) webpage which works to inform policy about the state of our oceans coastlines, focusing on metrics concerning ocean protection. This analysis focuses on the five ecosystems for which data is available. The five ecosystems are cold-water corals, mangroves, salt marshes, sea grasses, and warm-water corals.
+The original data comes from the [Ocean+Habitats](https://habitats.oceanplus.org/) webpage which works to inform policy about the state of our oceans coastlines, focusing on metrics concerning ocean protection. This analysis focuses on the five ecosystems for which data is available. The five ecosystems are cold-water corals, mangroves, salt marshes, sea grasses, and warm-water corals. The ecosystem data is from 2016.
 
-Per capita GDP data was acquired from the [International Monetary Fund](https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD).
+Per capita GDP data was acquired from the [International Monetary Fund](https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD). 2016 per capita GDP data was used to correlate with the 2016 ecosystem data. 
 
 All of the data is publicly available.
 
@@ -288,7 +289,7 @@ ggplot(data = coastal_model_pred, aes(x = pc_gdp_2016, y = predict)) +
                                 "Warm-water coral")) +
   labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
-       title = print("2016 Percent Protected Areas by GDP")) +
+       title = print("2016 Percent Protected Areas by Per Capita GDP")) +
   theme_minimal()
 ```
 
@@ -456,7 +457,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   geom_line(aes(color = ecosystem, y = predict)) +
   labs(x= "Per Capita GDP ($USD)",
        y = "Percent protected",
-       title = print("2016 Percent Protected Areas by GDP")) +
+       title = print("2016 Percent Protected Areas by Per Capita GDP")) +
   theme_minimal()
 ```
 
