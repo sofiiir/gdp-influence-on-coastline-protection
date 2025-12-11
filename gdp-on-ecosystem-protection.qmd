@@ -140,10 +140,13 @@ sim_df <- tibble(proportion_protected_sim, gdp )
 sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
   data = sim_df,
   family = beta_family(link = "logit"))
+```
+
+Let's make sure the values are the same as the ones we assigned to the simulation. 
+```{r}
+#| code-fold: true
 
 # make sure the values are close to the assigned variables
-# summary(sim_model)
-
 tidy(sim_model) |> 
   mutate(p.value = ifelse(p.value < 0.001,
                      "p < 0.001",
@@ -221,6 +224,8 @@ sum_coastal_ecosystem_mod <- summary(coastal_ecosystem_model)
 We can use `broom.mixed::tidy()` to make an aesthetic summary table of our model. When originally running the `tidy()` function some of the p-values were zero since the table does not round. We use an `ifelse()` statement to replace anywhere with a p-value less than 0.001 to simply state "p \< 0.001." P-values that are less than 0.001 show statistical significance since there is an extremely low probability of getting those values by chance alone.
 
 ```{r}
+#| code-fold: true
+
 # create a tidy version of the summary table
 tidy(coastal_ecosystem_model) |>
    mutate(p.value = ifelse(p.value < 0.001,
