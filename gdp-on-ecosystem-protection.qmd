@@ -1,6 +1,6 @@
 ---
 title: "Per Capita GDP Influence on the Protection of Coastal Ecosystems"
-description: "Nation's per capita GDP influence on coastal ecosystem protections, an exploration of the proportion protected of cold-water corals, mangroves, salt marshes, sea grass, and warm-water corals."
+description: "Nation's per capita GDP influence on coastal ecosystem protections, an exploration of the proportion of protected area of cold-water corals, mangroves, salt marshes, sea grass, and warm-water corals."
 author: "Sofia Rodas"
 date: December 11, 2025
 format: 
@@ -18,13 +18,13 @@ execute:
 
 This repository investigates the hypothesis that nations with higher per capita GDP are more likely to protect their coastal ecosystems. This hypothesis is derived from the general knowledge that protecting ecosystems takes a large amount of resources. Policy must be put in place to create these protected areas. Countries with a higher per capita GDP would, in theory, have a greater amount of resources to spend on creating these zones.
 
-The type of ecosystem and the total area per ecosystem are also included as predictors in this analysis as they are confounding variables. The directed acyclic graph (DAG) shows the assumption that the ecosystem type affects the proportion of area that is protected. Some ecosystems are more valuable for a nation monetarily if they are not protected. For example, locations where fishing is important for the economy may be difficult to create as designated protected areas. Additionally, depending on the type of protection of an ecosystem, officially protecting an area may be implausible as surrounding communities may be reliant on the ecosystem to make a living and/or survive.
+The type of ecosystem and the total area per ecosystem are also included as predictors in this analysis as they are confounding variables. The directed acyclic graph (DAG) shows the assumption that the ecosystem type affects the proportion of area that is protected. Some ecosystems are more valuable for a nation monetarily if they are not protected. For example, locations where fishing is important for the economy may be difficult to create as designated protected areas. Additionally, depending on the type of protection of an ecosystem, officially protecting an area may be implausible as surrounding communities may be reliant on the ecosystem to make a living.
 
-In the DAG, total area of an ecosystem acts as a fork. Total area of an ecosystem is therefore a confounding variable. For proportion protected area, the more area a nation has of a specific ecosystem the more area they would need to protect to achieve a higher proportion protected area. One example in which I would expect this to largely influence proportion protected area is in small island nations where they may have a large area of a coastal ecosystems. Even if they protect a greater unadjusted area than another nation their proportion of protected area may be low.
+In the DAG, total area of an ecosystem acts as a fork. Total area of an ecosystem is therefore a confounding variable. For proportion protected area, the more area a nation has of a specific ecosystem the more area they would need to protect to achieve a higher proportion of protected area. One example in which I would expect this to largely influence proportion protected area is in small island nations where they may have a large area of a specific coastal ecosystems. Even if they protect a greater unadjusted area than another nation their proportion of protected area may be low.
 
 Total area per ecosystem also influences per capita GDP as locations with more coast are more likely to have higher per capita GDP. This higher per capita GDP would likely be due to an increase in resources and/or an increase in eco-tourism.
 
-Total coastal area of a country would also be a confounding variable that effects both per capita GDP and proportion protected per ecosystem. Coastal areas other than the five ecosystems, cold-water coral, mangroves, salt marsh, sea grass, and warm-water coral are not accounted for in the data. Coastal areas such as beaches and ports would likely increase per capita GDP again through a potential increase in eco-tourism and/or global trade. These other coastline types could potentially influence protection statuses. For example, if a port is near a mangrove the mangrove would be less likely to gain a protected status. Alternatively, if a wealthy homes are near sea grass the sea grass may be more likely to be protected to maintain its sea surge abilities. Unfortunately, total coastal area of a country was not located for this analysis and is not included in the model. 
+Total coastal area of a country is also a confounding variable that effects both per capita GDP and proportion protected area per ecosystem. Coastal areas other than the five ecosystems, cold-water coral, mangroves, salt marsh, sea grass, and warm-water coral are not accounted for in the data. Coastal areas such as beaches and ports would likely increase per capita GDP again through a potential increase in eco-tourism and/or global trade. These other coastline types could potentially influence protection statuses. For example, if a port is near a mangrove the mangrove would be less likely to gain a protected status. Alternatively, if wealthy homes are near sea grass the sea grass may be more likely to be protected to maintain its sea surge abilities. Unfortunately, total coastal area of a country data was not found or acquired for this analysis and is not included in the model.  
 
 ![DAG: Total area of an ecosystem, ecosystem type, and per capita GDP (USD$), and total coastal area of a country all influence proportion of protected area per ecosystem.](data/DAG.png)
 
@@ -124,7 +124,7 @@ phi <- 15 # this is shape1+shape2
 mu <- 1 / (1 + exp(-logit_mu)) # this is shape1/(shape1+shape2)
 ```
 
-To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated with `mu` and `phi`.
+To simulate values for the response variable we use `rbeta`. This requires the above parameters we have already assigned. According to the documentation, `shape1` and `shape2` are two variables that need to be calculated with `r mu` and `r phi`.
 
 ```{r}
 # calculate the parameters for rbeta
@@ -301,7 +301,7 @@ Key takeaway: Overall, as GDP increases the expected proportion of protected are
 
 # Confidence Intervals
 
-Confidence intervals show where we expect 95% of the time we will find the range for the  parameter in question. For beta regression when analyzing the confidence interval for betas we expect the beta's value to fall within the confidence interval 95% of the time. When analyzing the prediction's confidence interval, it shows that the `mu` is expected to fall within the confidence interval 95% of the time. 
+Confidence intervals show where we expect 95% of the time we will find the range for the  parameter in question. For beta regression when analyzing the confidence interval for betas we expect the beta's value to fall within the confidence interval 95% of the time. When analyzing the prediction's confidence intervals, the intervals show where the `r mu` is expected to fall 95% of the time. 
 
 Typically, we can use the `predict()` function to calculate confidence intervals. Unfortunately, the various models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below and by bootstrapping.
 
@@ -325,7 +325,7 @@ beta3_warmwater_coral <- sum_coastal_ecosystem_mod$coefficients$cond[7]
 se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
 ```
 
-Confidence intervals are then calculated subtracting and adding one standard error from each beta value.
+Confidence intervals are then calculated subtracting and adding 1.96 times the standard error from each beta value.
 
 ```{r}
 #| code-fold: true
@@ -360,7 +360,7 @@ beta3_wwc_CI_upr <- beta3_warmwater_coral + (1.96* se[7])
 
 ```
 
-Finally, let's create a dataframe with the beta's confidence interval values.
+Finally, we create a data frame with the beta's confidence interval values.
 
 ```{r}
 #| code-fold: true
@@ -382,15 +382,15 @@ These confidence intervals are ranges specific to the individual predictors and 
 
 The per capita GDP confidence interval range is positive showing that proportion protected area is positively correlated with per capita GDP. 
 
-The total area per ecosystem confidence interval includes zero in its range. This signifies that total area per ecosystem does not have an effect on proportion protected area. This confidence interval analysis also supports and is supported by the p-value for total area per ecosystem being greater than 0.05 and not statistically significant as denoted in the beta regression summary table. 
+The total area per ecosystem confidence interval includes zero in its range. This signifies that total area per ecosystem does not have an effect on proportion protected area. This confidence interval analysis also supports and is supported by the p-value for total area per ecosystem being greater than 0.05 and not statistically significant as denoted in the beta regression summary table above. 
 
-The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence intervals are the constructed for mangroves, salt marshes, sea grasses, and warm-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated by applying the `predict ()` function, that all of the other ecosystems are more likely to be protected than cold-water corals. The confidence intervals for mangroves, salt marshes, sea grasses, and warm-water coral overlap. This signifies the differences between mangroves, salt marshes, sea grasses, and warm-water coral are likely not significant but additional analysis would be necessary to confirm this statement.  
+The ecosystem's beta values' confidence interval ranges are all positive and do not include zero. `R` uses the first ecosystem alphabetically as the reference. In this case the reference is cold-water coral. The confidence intervals are then constructed for mangroves, salt marshes, sea grasses, and warm-water coral. The confidence interval ranges indicate, similarly to the prediction lines calculated above, that mangroves, salt marshes, sea grasses, and warm-water coral are more likely to be protected than cold-water corals. The confidence intervals for mangroves, salt marshes, sea grasses, and warm-water coral overlap. This signifies the differences between mangroves, salt marshes, sea grasses, and warm-water coral are likely not significant but additional analysis would be necessary to confirm this statement.  
 
 ## Prediction Lines Confidence Intervals
 
 ### Bootstrap Data
 
-We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps are run by sampling our original data with replacement. Since we have 446 rows of data in our data frame, we can choose to select 446 samples in the boot per bootstrap calculated for consistency. Below we are running a bootstrap 1000 times.
+We can calculate the confidence intervals for predictions by constructing bootstraps. Bootstraps are run by sampling our original data with replacement. Since we have 446 rows of data in our data frame, we choose to select 446 samples in the boot per bootstrap calculated for consistency. Below we are running a bootstrap 1000 times.
 
 ```{r}
 # reiterate through the boot 1000 times
@@ -421,7 +421,7 @@ boot_ci <- boot |> group_by(pc_gdp_2016, ecosystem) |>
             adj_prop_protected_upr = quantile(adj_prop_protected, 0.975))
 ```
 
-Let's plot the confidence intervals for the predictions differentiating for ecosystems.
+Let's plot the confidence intervals for the predictions differentiating by ecosystems.
 
 ```{r}
 #| code-fold: true
@@ -461,11 +461,9 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
   theme_minimal()
 ```
 
-The confidence intervals on the predictions show the variation for the different ecosystems based on all of the predictors confounding effects. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings that the beta values confidence intervals are also overlapping as stated above. The differences between the effect of per capita GDP on the protection of ecosystems do not greatly differ between the ecosystems with the exception of cold-water coral.
+The confidence intervals constructed based on the predictions show the variation for the different ecosystems based on all of the predictors confounding effects. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings that the beta values confidence intervals are also overlapping as stated above. The differences between the effect of per capita GDP on the protection of ecosystems do not greatly differ between the ecosystems with the exception of cold-water coral.
 
-Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence intervals. The overlap in confidence intervals means that the difference between the expected `mu` values for warm-water corals, seagrass, and cold-water coral are not significantly different. 
-
-that the 95% of the values of proportion protected area for cold-water coral is .
+Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence intervals. The overlap in confidence intervals means that the difference between the expected `r mu` values for warm-water corals, sea grass, and cold-water coral are not significantly different when per capita GDP is 50000 and up.  
 
 # Conclusion 
 
@@ -477,6 +475,6 @@ Brooks, M., Kristensen K., Maechler M., Magnusson A., McGillycuddy M., Skaug H.,
 
 Czapanskiy, M. and Grimes N. EDS 222: Statistics for Environmental Data Science. Available at: [https://eds-222-stats-f25.github.io/](https://eds-222-stats-f25.github.io/)
 
-IMF. (2023). World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF. Available at: https://doi.org/10.5089/9798400235801.081
+IMF. (2023). World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF.  https://doi.org/10.5089/9798400235801.081 Available at: [https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD](https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD)
 
 UNEP-WCMC. (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
