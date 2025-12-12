@@ -239,7 +239,7 @@ tidy(coastal_ecosystem_model) |>
 
 ## Hypothesis test
 
-We reject the null hypothesis that per capita GDP does not have an effect on the proportion of protected area for coastal ecosystems. The beta value for per capita GDP is low but positive at `r sum_coastal_ecosystem_mod$coefficients$cond[2]`. This value makes sense logically since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the likelihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area for coastal ecosystems is positive and statistically significant.
+We reject the null hypothesis that per capita GDP does not have an effect on the proportion of protected area. The beta value for per capita GDP is low but positive at `r sum_coastal_ecosystem_mod$coefficients$cond[2]`. This value makes sense logically since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the likelihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area is positive and statistically significant.
 
 #### Additional findings
 
