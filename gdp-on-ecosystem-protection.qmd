@@ -96,7 +96,7 @@ Here is our proposed model based on our understanding of the variable interactio
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
-logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
+logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{WarmwaterCorals}
 \end{align}
 $$
 
@@ -143,7 +143,7 @@ sim_model <- glmmTMB(proportion_protected_sim ~ gdp,
   family = beta_family(link = "logit"))
 ```
 
-Let's make sure the values are the same as the ones we assigned to the simulation. 
+Let's make sure the output values are the same as the ones we assigned to the simulation. 
 ```{r}
 #| code-fold: true
 
@@ -193,7 +193,7 @@ Let's remind ourselves of the statistical notation of our investigation.
 $$
 \begin{align}
 \text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
-logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{Warmwater Corals}
+logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{WarmwaterCorals}
 \end{align}
 $$
 
@@ -245,13 +245,13 @@ We reject the null hypothesis that per capita GDP does not have an effect on the
 
 Total area per ecosystem is not statistically significant. It is not statistically influencing the proportion of protected area. It is still important to keep total area per ecosystem in the model as it is a confounding variable as presented in the DAG above.
 
-All of the ecosystem's proportion protected values are statistically significant when comparing proportion protected to the cold-water coral reference values. Mangroves, salt marshes, sea grasses, and warm-water coral are all more likely to be protected than cold-water corals.
+All of the ecosystem's proportion protected values are statistically significant when comparing proportion protected area to the cold-water coral reference values. Mangroves, salt marshes, sea grasses, and warm-water coral are all more likely to be protected than cold-water corals.
 
 ### Predictions
 
 Now that we ran the beta regression with the `glmmTMB` function let's create prediction lines based on ecosystem. We create data that shows the spread of the expected values for per capita GDP.
 
-Here we use `seq()` to create values in the range of our real world data by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique variation between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values are numeric.
+Here we use `seq()` to create values in the range of our real world data by a specific interval. We also want all of the ecosystems in the prediction grid. Every unique combination between the sequenced along per capita GDP values and different ecosystem type is included in the prediction grid. We keep the total area variable constant by using the mean since the values are numeric.
 
 ```{r}
 
