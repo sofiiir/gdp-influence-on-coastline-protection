@@ -24,7 +24,7 @@ In the DAG, total area of an ecosystem acts as a fork. Total area of an ecosyste
 
 Total area per ecosystem also influences per capita GDP as locations with more coast are more likely to have higher per capita GDP. This higher per capita GDP would likely be due to an increase in resources and/or an increase in eco-tourism.
 
-Total coastal area of a country is also a confounding variable that effects both per capita GDP and proportion protected area per ecosystem. Coastal areas other than the five ecosystems, cold-water coral, mangroves, salt marsh, sea grass, and warm-water coral are not accounted for in the data. Coastal areas such as beaches and ports would likely increase per capita GDP again through a potential increase in eco-tourism and/or global trade. These other coastline types could potentially influence protection statuses. For example, if a port is near a mangrove the mangrove would be less likely to gain a protected status. Alternatively, if wealthy homes are near sea grass the sea grass may be more likely to be protected to maintain its sea surge abilities. Unfortunately, total coastal area of a country data was not found or acquired for this analysis and is not included in the model.  
+Total coastal area of a country is also a confounding variable that effects both per capita GDP and proportion protected area per ecosystem. Coastal areas other than the five ecosystems, cold-water coral, mangroves, salt marsh, sea grass, and warm-water coral are not accounted for in the data. Coastal areas such as beaches and ports would likely increase per capita GDP again through a potential increase in eco-tourism and/or global trade. These other coastline types could potentially influence protection statuses. For example, if a port is near a mangrove the mangrove would be less likely to gain a protected status. Alternatively, if wealthy homes are near sea grass the sea grass may be more likely to be protected to maintain its sea surge abilities. Unfortunately, total coastal area data of a country was not found or acquired for this analysis and is not included in the model.  
 
 ![DAG: Total area of an ecosystem, ecosystem type, and per capita GDP (USD$), and total coastal area of a country all influence proportion of protected area per ecosystem.](data/DAG.png)
 
@@ -206,7 +206,7 @@ H_A &: \beta_1 > 0
 \end{align}
 $$
 
-The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have a positive effect on the proportion of protected area.
+The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have an effect on the proportion of protected area.
 
 ## Fit a beta regression model
 
@@ -463,7 +463,7 @@ ggplot(coastal_model_pred, aes(x = pc_gdp_2016)) +
 
 The confidence intervals constructed based on the predictions show the variation for the different ecosystems based on all of the predictors confounding effects. The confidence intervals for the mangroves, salt marshes, sea grasses, and warm-water corals are all overlapping which supports the findings that the beta values confidence intervals are also overlapping as stated above. The differences between the effect of per capita GDP on the protection of ecosystems do not greatly differ between the ecosystems with the exception of cold-water coral.
 
-Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence intervals. The overlap in confidence intervals means that the difference between the expected `mu` values for warm-water corals, sea grass, and cold-water coral are not significantly different when per capita GDP is 50000 and up.  
+Cold-water coral is less likely to be protected than the other ecosystems. At approximately $50,000 USD per capita GDP, the cold-water coral confidence interval overlaps with the sea grass and warm-water coral confidence intervals. The overlap in confidence intervals means that the difference between the expected `mu` values for warm-water corals, sea grass, and cold-water coral are not significantly different when per capita GDP is 50,000 (USD) and up.  
 
 # Conclusion 
 
