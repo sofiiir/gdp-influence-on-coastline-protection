@@ -325,7 +325,7 @@ beta3_warmwater_coral <- sum_coastal_ecosystem_mod$coefficients$cond[7]
 se <- sum_coastal_ecosystem_mod$coefficients$cond[, "Std. Error"]
 ```
 
-Confidence intervals are then calculated subtracting and adding 1.96 times the standard error from each beta value.
+Confidence intervals are then calculated by subtracting 1.96 times the standard error for the lower bound and by adding 1.96 times the standard error for the upper bound for each beta value.
 
 ```{r}
 #| code-fold: true
