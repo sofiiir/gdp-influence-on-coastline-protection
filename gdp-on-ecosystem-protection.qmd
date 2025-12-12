@@ -471,7 +471,7 @@ Per capita GDP has a positive effect on proportion protected area regardless of 
 
 # References
 
-Brooks, M., Kristensen K., Maechler M., Magnusson A., McGillycuddy M., Skaug H., Nielsen A., Berg C., van Bentham K., Sadat N., Lüdecke D., Lenth R., O'Brien J., Geyer C.J., Jagan M., Wiernik B., Stouffer D.B., Agronah M., Akdur H.T.K., Bové D.S., and Krieger N. Package ‘glmmTMB’ (CRAN). (Oct. 9, 2025). Available at: [https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf)
+Brooks, M., Kristensen K., Maechler M., Magnusson A., McGillycuddy M., Skaug H., Nielsen A., Berg C., van Bentham K., Sadat N., Lüdecke D., Lenth R., O'Brien J., Geyer C.J., Jagan M., Wiernik B., Stouffer D.B., Agronah M., Akdur H.T.K., Bové D.S., and Krieger N. (Oct. 9, 2025). Package ‘glmmTMB’ (CRAN). Available at: [https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf)
 
 Czapanskiy, M. and Grimes N. EDS 222: Statistics for Environmental Data Science. Available at: [https://eds-222-stats-f25.github.io/](https://eds-222-stats-f25.github.io/)
 
