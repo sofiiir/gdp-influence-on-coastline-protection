@@ -20,7 +20,7 @@ This repository investigates the hypothesis that nations with higher per capita 
 Note: The original downloaded data is not in this git repository. It can be downloaded from its original sources.
 
 ## Repository Contents:
--**Beta Regression Quarto:** [beta-regression.qmd](https://github.com/sofiiir/gdp-influence-on-coastline-protection/blob/main/beta-regression.qmd)
+-**Project Quarto:** [gdp-on-ecosystem-protection.qmd](https://github.com/sofiiir/gdp-influence-on-coastline-protection/blob/main/gdp-on-ecosystem-protection.qmd)
 
 -**Data Cleaning Quarto:** [data-cleaning.qmd](https://github.com/sofiiir/gdp-influence-on-coastline-protection/blob/main/data-cleaning.qmd)
 
