@@ -477,4 +477,4 @@ Czapanskiy, M. and Grimes N. EDS 222: Statistics for Environmental Data Science.
 
 IMF. (2023). World Economic Outlook, October 2023. Washington, DC: International Monetary Fund. ©IMF.  https://doi.org/10.5089/9798400235801.081 Available at: [https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD](https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD)
 
-UNEP-WCMC. (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](habitats.oceanplus.org)
+UNEP-WCMC. (2025). Ocean+ Habitats [On-line], [Downloaded: October 2025]. Available at: [habitats.oceanplus.org](https://habitats.oceanplus.org/)
