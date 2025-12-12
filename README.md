@@ -1,4 +1,4 @@
-# GPD-Influence-on-Coastline-Protection
+# Per Capita GDP Influence on the Protection of Coastal Ecosystems
 ### Author: Sofia Rodas
 
 <img width="897" height="452" alt="DAG" src="https://github.com/user-attachments/assets/1b8caa4a-9bfc-4a2b-bc74-f3e66dd91f3a" />
