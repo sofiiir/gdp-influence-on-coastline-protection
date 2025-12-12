@@ -100,7 +100,7 @@ logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \t
 \end{align}
 $$
 
-# Simulating data
+# Simulating Data
 
 We simulate data to make sure we understand the model before using the model on our real world data. To ensure we truly understand the model we want to simulate data, then run the beta regression with the output being similar values to those we gave it when first creating the data parameters.
 
@@ -160,7 +160,7 @@ tidy(sim_model) |>
 
 Running a beta regression model on the simulated data outputs values that are close to those values we originally assigned to the variables. This is a sign we understand our model enough to move onto fitting the model on our own data!
 
-# Data preparation
+# Data Preparation
 
 The beta regression model only works on proportion so here we change `percent_protected` to `proportion_protected`.
 
@@ -197,7 +197,7 @@ logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \t
 \end{align}
 $$
 
-## Hypothesis statistical notation
+## Hypothesis Statistical Notation
 
 $$
 \begin{align}
@@ -208,7 +208,7 @@ $$
 
 The hypothesis as described in full detail in the introduction is that per capita GDP has a positive effect on the proportion of protected area. The null hypothesis is that per capita GDP does not have an effect on the proportion of protected area.
 
-## Fit a beta regression model
+## Fit a Beta Regression Model
 
 Again to reiterate, the beta regression model is useful when the response is a proportion. Since the protected areas are between the proportions of 0 and 1 this model will assess whether there is any relationship between the predictors, per capita GDP, total area per ecosystem, and ecosystem type, and the response, proportion protected area per ecosystem.
 
@@ -237,7 +237,7 @@ tidy(coastal_ecosystem_model) |>
   kable_styling()
 ```
 
-## Hypothesis test
+## Hypothesis Test
 
 We reject the null hypothesis that per capita GDP does not have an effect on the proportion of protected area. The beta value for per capita GDP is low but positive at `r sum_coastal_ecosystem_mod$coefficients$cond[2]`. This value makes sense logically since per capita GDP changes by the thousands. The p-value is less than 0.05 meaning that the likelihood that these findings are due to random chance are extremely low. The effect of per capita GDP on proportion protected area is positive and statistically significant.
 
@@ -305,7 +305,7 @@ Confidence intervals show where we expect 95% of the time we will find the range
 
 Typically, we can use the `predict()` function to calculate confidence intervals. Unfortunately, the various models that run beta regressions do not allow us to create confidence intervals using the predict function so we calculate these by hand below and by bootstrapping.
 
-## Beta's individual Confidence Intervals
+## Beta's Individual Confidence Intervals
 
 The values from our summary model are utilized to create the confidence intervals for the individual beta values.
 
