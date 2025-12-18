@@ -95,7 +95,7 @@ At first glance the data does not follow any general trends, but we can run a st
 Here is our proposed model based on our understanding of the variable interactions. The ecosystems are individual predictors in this model since they are dummy variables. Cold-water corals are the reference level since `R` defines the reference alphabetically. Therefore, there is no dummy variable for cold-water coral. 
 $$
 \begin{align}
-\text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
+\text{ProportionProtected} &\sim Beta(\mu, \phi) \\
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{WarmwaterCorals}
 \end{align}
 $$
@@ -192,7 +192,7 @@ Let's remind ourselves of the statistical notation of our investigation.
 
 $$
 \begin{align}
-\text{ProportionProtected} &\sim BetaRegression(\mu, \phi) \\
+\text{ProportionProtected} &\sim Beta(\mu, \phi) \\
 logit(\mu) &= \beta_0 + \beta_1 \text{GDP}+ \beta_2 \text{TotalArea}+ \beta_3 \text{Mangroves} + \beta_4 \text{Saltmarshes}+ \beta_5 \text{Seagrass}+ \beta_6 \text{WarmwaterCorals}
 \end{align}
 $$
